@@ -10,6 +10,10 @@ on:
         type: string
         description: README file path
         required: true
+      CLIENT_ID:
+        type: string
+        description: ClientID
+        required: true  
       custom_repo:
         type: string
         description: Custom repo to checkout
@@ -33,8 +37,9 @@ jobs:
           repository: actions/runner-images
           
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' &&
-              github.event.label.name == 'build-ubuntu' }}
+        #if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' &&
+        #      github.event.label.name == 'build-ubuntu' }}
+        if: ${{ github.event_name == 'pull_request' }}
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -69,7 +74,7 @@ jobs:
         run: |
             ./images.CI/linux-and-win/build-image.ps1 `
               -TemplatePath ${{ env.TemplatePath }} `
-              -ClientId ${{ secrets.CLIENT_ID }} `
+              -ClientId ${{ inputs.CLIENT_ID }} `
               -ClientSecret ${{ secrets.CLIENT_SECRET }} `
               -Location ${{ secrets.AZURE_LOCATION }} `
               -ResourcesNamePrefix ${{ github.run_number }} `
