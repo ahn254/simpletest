@@ -23,4 +23,5 @@ jobs:
       custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
     secrets:   
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
     #secrets: inherit
