@@ -46,6 +46,7 @@ defaults:
 jobs:
   build:
     runs-on: ci-agent
+    environment: ubuntu
     steps:
       - name: Checkout repository
         if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
