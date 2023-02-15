@@ -23,6 +23,22 @@ on:
         required: true
       AZURE_STORAGE_ACCOUNT:
         required: true
+      CLIENT_SECRET:
+        required: true
+      AZURE_LOCATION:
+        required: true
+      AZURE_RESOURCE_GROUP:
+        required: true
+      AZURE_SUBSCRIPTION:
+        required: true
+      AZURE_TENANT:
+        required: true
+      BUILD_AGENT_VNET_NAME:
+        required: true
+      BUILD_AGENT_SUBNET_NAME:
+        required: true
+      BUILD_AGENT_VNET_RESOURCE_GROUP:
+        required: true
 defaults:
   run:
     shell: pwsh
