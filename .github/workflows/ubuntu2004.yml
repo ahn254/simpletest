@@ -22,4 +22,4 @@ jobs:
       custom_repo: ${{ github.event.inputs.CUSTOM_REPOSITORY }}
       custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
       CLIENT_ID: ${{ secrets.CLIENT_ID }}
-    secrets: inherit
+    #secrets: inherit
