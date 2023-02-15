@@ -21,6 +21,8 @@ on:
     secrets:
       CLIENT_ID:
         required: true
+      AZURE_STORAGE_ACCOUNT:
+        required: true
 defaults:
   run:
     shell: pwsh
