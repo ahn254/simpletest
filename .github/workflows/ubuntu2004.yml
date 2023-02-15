@@ -21,4 +21,5 @@ jobs:
       image_readme_name: 'Ubuntu2004-Readme.md'
       custom_repo: ${{ github.event.inputs.CUSTOM_REPOSITORY }}
       custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
+      CLIENT_ID: ${{ secrets.CLIENT_ID }}
     secrets: inherit
