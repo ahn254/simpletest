@@ -8,7 +8,6 @@ on:
         description: 'Commit hash'
         required: false
   pull_request_target:
-    types: labeled
     paths:
     - 'images/linux/**'
   schedule:
