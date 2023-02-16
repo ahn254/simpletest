@@ -42,6 +42,13 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
+    - name: update variable
+      shell: pwsh
+      run: |
+        $todayte = Get-Date -Format "yyyyMMdd"
+        echo "current_date=$todayte" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        write-host $todayte
+        
     - uses: actions/checkout@v3
     
     - uses: azure/login@v1
