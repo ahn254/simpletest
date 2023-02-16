@@ -19,8 +19,7 @@ jobs:
   update_vars:
     name: Update Variables 
     runs-on: windows-latest
-    permissions:
-      actions: write
+    permissions: write-all
     steps:  
       - name: run api
         shell: pwsh
