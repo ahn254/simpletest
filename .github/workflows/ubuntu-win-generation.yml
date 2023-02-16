@@ -18,27 +18,6 @@ on:
         type: string
         description: Custom repo hash
         required: false
-    secrets:
-      CLIENT_ID:
-        required: true
-      AZURE_STORAGE_ACCOUNT:
-        required: true
-      CLIENT_SECRET:
-        required: true
-      AZURE_LOCATION:
-        required: true
-      AZURE_RESOURCE_GROUP:
-        required: true
-      AZURE_SUBSCRIPTION:
-        required: true
-      AZURE_TENANT:
-        required: true
-      BUILD_AGENT_VNET_NAME:
-        required: true
-      BUILD_AGENT_SUBNET_NAME:
-        required: true
-      BUILD_AGENT_VNET_RESOURCE_GROUP:
-        required: true
 defaults:
   run:
     shell: pwsh
@@ -54,9 +33,8 @@ jobs:
           repository: actions/runner-images
           
       - name: Checkout PR
-        #if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' &&
-        #      github.event.label.name == 'build-ubuntu' }}
-        if: ${{ github.event_name == 'pull_request' }}
+        if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' &&
+              github.event.label.name == 'build-ubuntu' }}
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
