@@ -7,7 +7,8 @@ on:
       CUSTOM_REPOSITORY_HASH:
         description: 'Commit hash'
         required: false
-  pull_request:
+  pull_request_target:
+    #types: labeled
     paths:
     - 'images/linux/**'
   schedule:
@@ -21,15 +22,4 @@ jobs:
       image_readme_name: 'Ubuntu2004-Readme.md'
       custom_repo: ${{ github.event.inputs.CUSTOM_REPOSITORY }}
       custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
-    secrets:   
-      CLIENT_ID: ${{ secrets.CLIENT_ID }}
-      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-      CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-      AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
-      AZURE_RESOURCE_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
-      AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
-      AZURE_TENANT: ${{ secrets.AZURE_TENANT }}
-      BUILD_AGENT_VNET_NAME: ${{ secrets.BUILD_AGENT_VNET_NAME }}
-      BUILD_AGENT_SUBNET_NAME: ${{ secrets.BUILD_AGENT_SUBNET_NAME }}
-      BUILD_AGENT_VNET_RESOURCE_GROUP: ${{ secrets.BUILD_AGENT_VNET_RESOURCE_GROUP }}
-    #secrets: inherit
+    secrets: inherit
