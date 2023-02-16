@@ -33,8 +33,7 @@ jobs:
           repository: actions/runner-images
           
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' &&
-              github.event.label.name == 'build-ubuntu' }}
+        if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' }}
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
