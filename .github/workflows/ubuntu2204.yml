@@ -17,7 +17,8 @@ on:
 jobs:
   Ubuntu_2204:
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2204') }}
-    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') }}
+    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') ||
+      (inputs.custom_repo != '' && inputs.custom_repo_hash != '') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
     with:
       image_name: 'ubuntu2204'
