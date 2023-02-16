@@ -32,7 +32,7 @@ jobs:
 
       
   macOS_12:
-    name: MacOS 12
+    name: macOS-12_${{ vars.current_date }}.${{ github.run_attempt }}_unstable
     needs: update_vars
     uses: ./.github/workflows/macos-generation.yml
     with:
