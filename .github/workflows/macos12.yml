@@ -28,12 +28,13 @@ jobs:
           $todayte = Get-Date -Format "yyyyMMdd"
           $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
           $header = @{"Authorization" = "token $(gh auth token)"}
-          $body = "{"name":"CURRENT_DATE","value":"$todayte"}"
+          $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
 
       
   macOS_12:
     name: MacOS 12
+    needs: update_vars
     uses: ./.github/workflows/macos-generation.yml
     with:
       image_label: 'macOS Monterey'
