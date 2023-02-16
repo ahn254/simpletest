@@ -26,7 +26,7 @@ jobs:
         run: |
           $todayte = Get-Date -Format "yyyyMMdd"
           $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
-          $header = @{"Authorization" = "Bearer ${{ secrets.GITHUB_TOKEN }}"}
+          $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
           $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
 
