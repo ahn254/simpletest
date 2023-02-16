@@ -16,7 +16,24 @@ on:
     - cron: '0 0 * * *'
   
 jobs:
+  update_vars:
+    name: Update Variables 
+    runs-on: windows-latest
+    permissions:
+      actions: write
+    steps:  
+      - name: run api
+        shell: pwsh
+        run: |
+          $todayte = Get-Date -Format "yyyyMMdd"
+          $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
+          $header = @{"Authorization" = "token $(gh auth token)"}
+          $body = "{"name":"CURRENT_DATE","value":"$todayte"}"
+          Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+
+      
   macOS_12:
+    name: MacOS 12
     uses: ./.github/workflows/macos-generation.yml
     with:
       image_label: 'macOS Monterey'
