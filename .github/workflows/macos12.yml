@@ -1,5 +1,5 @@
 #run-name: macOS-12_$(date:yyyyMMdd)$(rev:.r)_unstable 
-run-name: macOS-12_${{ vars.current_date }}.${{ github.run_attempt }}_unstable
+run-name: macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}
 on:
   workflow_dispatch:
     inputs:
@@ -32,7 +32,7 @@ jobs:
 
       
   macOS_12:
-    name: macOS-12_${{ vars.current_date }}.${{ github.run_attempt }}_unstable
+    name: macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}
     needs: update_vars
     uses: ./.github/workflows/macos-generation.yml
     with:
