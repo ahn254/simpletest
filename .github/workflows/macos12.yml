@@ -30,6 +30,8 @@ jobs:
           $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
           $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+          $nextJobName = "macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}"
+          echo "virtualMachineName=$nextJobName" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
 
       
   macOS_12:
