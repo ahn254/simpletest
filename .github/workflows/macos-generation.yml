@@ -51,7 +51,7 @@ jobs:
         #echo "##vso[task.setvariable variable=VirtualMachineName;]$virtualMachineName"
         #echo "##vso[build.updatebuildnumber]$virtualMachineName"
         write-host "This is pwsh variables - " $virtualMachineName
-        write-host "This is env variables - " ${{ env.virtualMachineName }}
+        write-host "This is env variables - " ${{ steps.run_api.virtualMachineName }}
         
     - uses: actions/checkout@v3
     
