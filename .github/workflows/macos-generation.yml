@@ -61,6 +61,7 @@ jobs:
         
     - name: Validate contributor permissions
       #if: ${{ startsWith(github.ref, 'refs/pull/') == true }}
+      if: ${{ github.event_name == 'pull_request_target' }}
       run: |
         #$GitHubFeed = az keyvault secret show -n "github-feed-token" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         [string]$contributorAllowList = "${{ vars.CONTRIBUTOR_ALLOWLIST }}"
