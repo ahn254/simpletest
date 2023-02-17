@@ -64,13 +64,13 @@ jobs:
       run: |
         #$GitHubFeed = az keyvault secret show -n "github-feed-token" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         write-host ${{ github.event.pull_request.number }}
-        write-host ${{ github.event.pull_request.head }}
-        write-host ${{ github.event.pull_request.base }}
+        write-host ${{ github.event.pull_request.head.ref }}
+        write-host ${{ github.event.pull_request.base.ref }}
         [string]$contributorAllowList = "${{ vars.CONTRIBUTOR_ALLOWLIST }}"
         ./images.CI/macos/validate-contributor.ps1 `
           -RepositoryName ${{ github.repository }} `
           -AccessToken ${{ secrets.GH_FEED_TOKEN }} `
-          -SourceBranch ${{ github.event.pull_request.head.ref }} `
+          -SourceBranch "refs/pull/${{ github.event.pull_request.number }}/merge" `
           -ContributorAllowList $contributorAllowList
         
         
