@@ -1,4 +1,4 @@
-#run-name: macOS-12_$(date:yyyyMMdd)$(rev:.r)_unstable 
+#run-name: macOS-12_$(date:yyyyMMdd)$(rev:.r)_unstable
 #run-name: macOS-12_${{ vars.current_date }}_unst.${{ github.run_id}}.${{ github.run_attempt }}
 run-name: macOS-12_${{ vars.current_date }}_unstable.${{ github.run_number }}.${{ github.run_attempt }}
 on:
@@ -15,14 +15,14 @@ on:
     - 'images/macos/**'
   schedule:
     - cron: '0 0 * * *'
-  
+
 jobs:
   update_vars:
-    name: Update Variables 
+    name: Update Variables
     runs-on: windows-latest
     outputs:
       virtualMachineName: ${{ steps.run_api.outputs.virtualMachineName }}
-    steps:  
+    steps:
       - name: run api
         id: run_api
         shell: pwsh
@@ -32,7 +32,7 @@ jobs:
           $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
           $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
-                
+
   macOS_12:
     name: macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}
     needs: update_vars
