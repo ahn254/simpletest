@@ -1,5 +1,5 @@
 #run-name: macOS-12_$(date:yyyyMMdd)$(rev:.r)_unstable 
-run-name: macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}
+run-name: macOS-12_${{ vars.current_date }}.${{ github.run_id}}_unstable.${{ github.run_attempt }}
 on:
   workflow_dispatch:
     inputs:
