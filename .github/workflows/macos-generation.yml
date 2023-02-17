@@ -10,6 +10,10 @@ on:
         type: string
         description: Base clean image
         required: true
+      virtualMachineName:
+        type: string
+        description: Name for VM in vSphere
+        required: true
       template_path:
         type: string
         description: Packer template path
@@ -42,17 +46,13 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-    - name: update variable
+    - name: set Virtual Machine Name
       shell: pwsh
       run: |
-        #$todayte = Get-Date -Format "yyyyMMdd"
+        #$virtualMachineName = ${{ inputs.virtualMachineName }}
         #echo "current_date=$todayte" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        $virtualMachineName = "macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}"
-        #echo "##vso[task.setvariable variable=VirtualMachineName;]$virtualMachineName"
-        #echo "##vso[build.updatebuildnumber]$virtualMachineName"
-        write-host "This is pwsh variables - " $virtualMachineName
-        write-host "This is env variables - " ${{ needs.update_vars.outputs.virtualMachineName }}
-        
+        write-host ${{ inputs.virtualMachineName }}
+               
     - uses: actions/checkout@v3
     
     - uses: azure/login@v1
