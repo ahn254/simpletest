@@ -68,7 +68,7 @@ jobs:
           -RepositoryName ${{ github.repository }} `
           -AccessToken ${{ secrets.GH_FEED_TOKEN }} `
           -SourceBranch ${{ github.ref }} `
-          -ContributorAllowList ${{ vars.CONTRIBUTOR_ALLOWLIST }}
+          -ContributorAllowList "${{ vars.CONTRIBUTOR_ALLOWLIST }}"
         
         
     - name: Select datastore
