@@ -67,7 +67,7 @@ jobs:
         ./images.CI/macos/validate-contributor.ps1 `
           -RepositoryName ${{ github.repository }} `
           -AccessToken ${{ secrets.GH_FEED_TOKEN }} `
-          -SourceBranch ${{ github.ref }} `
+          -SourceBranch ${{ github.event.pull_request.head.ref }} `
           -ContributorAllowList $contributorAllowList
         
         
