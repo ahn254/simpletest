@@ -35,7 +35,7 @@ jobs:
           $nextJobName = "macOS-12_${{ vars.current_date }}.${{ github.run_number }}_unstable.${{ github.run_attempt }}"
           write-output $nextJobName
           #echo "virtualMachineName=$nextJobName" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-          echo "virtualMachineName=$nextJobName" >> $GITHUB_OUTPUT
+          echo "virtualMachineName=$nextJobName" | Out-File -FilePath $Env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       
   macOS_12:
