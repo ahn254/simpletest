@@ -10,6 +10,10 @@ on:
         type: string
         description: Base clean image
         required: true
+      virtualMachineName:
+        type: string
+        description: Name for VM in vSphere
+        required: true
       template_path:
         type: string
         description: Packer template path
@@ -40,8 +44,15 @@ defaults:
     
 jobs:
   build:
-    runs-on: macos-unstable
+    runs-on: windows-2022
     steps:
+    - name: set Virtual Machine Name
+      shell: pwsh
+      run: |
+        #$virtualMachineName = ${{ inputs.virtualMachineName }}
+        #echo "current_date=$todayte" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        write-host ${{ inputs.virtualMachineName }}
+               
     - uses: actions/checkout@v3
     
     - uses: azure/login@v1
