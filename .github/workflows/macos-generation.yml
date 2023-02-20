@@ -98,7 +98,7 @@ jobs:
          packer build -on-error=abort `
         -var="vcenter_server=${{ secrets.VISERVER_V2 }}" `
         -var="vcenter_username=$VIUserName" `
-        -var='vcenter_password=$VIPassword' `
+        -var="vcenter_password=$VIPassword" `
         -var="vcenter_datacenter=${{ env.VCENTER_DATACENTER }}" `
         -var="cluster_or_esxi_host=${{ env.ESXI_CLUSTER }}" `
         -var="esxi_datastore=${{ env.BUILD_DATASTORE }}" `
