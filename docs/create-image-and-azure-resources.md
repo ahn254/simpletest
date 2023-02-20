@@ -9,7 +9,7 @@ After successful image generation, a snapshot of the temporary VM will be conver
 ## Prerequisites and Image-generation
 ### Build Agent requirements
 - `OS` - Windows/Linux
-- `packer` - Can be downloaded from https://www.packer.io/downloads
+- `packer 1.8.2 or higher` - Can be downloaded from https://www.packer.io/downloads
 - `PowerShell 5.0 or higher` or `PSCore` for linux distributes.
 - `Azure CLI ` - https://docs.microsoft.com/en-us/cli/azure/install-azure-cli
 - `Azure Az Powershell module` - https://docs.microsoft.com/en-us/powershell/azure/install-az-ps
@@ -181,9 +181,7 @@ The scripts are copied to the VHD during the image generation process to the fol
 
 ##### Windows
 
-- **Choco.ps1** - contains dummy command to cleanup orphaned packages to avoid initial delay for future choco commands
-- **Dotnet.ps1** - adds `$env:USERPROFILE\.dotnet\tools` directory to the PATH
+- **GenerateIISExpressCertificate.ps1** - generates and imports a certificate to run applications with IIS Express through HTTPS
 - **InternetExplorerConfiguration** - turns off the Internet Explorer Enhanced Security feature
 - **Msys2FirstLaunch.ps1** - initializes bash user profile in MSYS2
-- **RustJunction.ps1** - creates Rust junction points to cargo and rustup folders
 - **VSConfiguration.ps1** - performs initial Visual Studio configuration

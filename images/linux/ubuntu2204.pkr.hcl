@@ -235,6 +235,11 @@ build {
   }
 
   provisioner "file" {
+    destination = "${var.image_folder}/SoftwareReport/"
+    source      = "${path.root}/../../helpers/software-report-base"
+  }
+
+  provisioner "file" {
     destination = "${var.installer_script_folder}/toolset.json"
     source      = "${path.root}/toolsets/toolset-2204.json"
   }
@@ -282,10 +287,12 @@ build {
                         "${path.root}/scripts/installers/apache.sh",
                         "${path.root}/scripts/installers/aws.sh",
                         "${path.root}/scripts/installers/clang.sh",
+                        "${path.root}/scripts/installers/swift.sh",
                         "${path.root}/scripts/installers/cmake.sh",
                         "${path.root}/scripts/installers/codeql-bundle.sh",
                         "${path.root}/scripts/installers/containers.sh",
                         "${path.root}/scripts/installers/dotnetcore-sdk.sh",
+                        "${path.root}/scripts/installers/firefox.sh",
                         "${path.root}/scripts/installers/microsoft-edge.sh",
                         "${path.root}/scripts/installers/gcc.sh",
                         "${path.root}/scripts/installers/gfortran.sh",
@@ -303,6 +310,7 @@ build {
                         "${path.root}/scripts/installers/mono.sh",
                         "${path.root}/scripts/installers/kotlin.sh",
                         "${path.root}/scripts/installers/mysql.sh",
+                        "${path.root}/scripts/installers/mssql-cmd-tools.sh",
                         "${path.root}/scripts/installers/sqlpackage.sh",
                         "${path.root}/scripts/installers/nginx.sh",
                         "${path.root}/scripts/installers/nvm.sh",
@@ -326,7 +334,8 @@ build {
                         "${path.root}/scripts/installers/android.sh",
                         "${path.root}/scripts/installers/pypy.sh",
                         "${path.root}/scripts/installers/python.sh",
-                        "${path.root}/scripts/installers/graalvm.sh"
+                        "${path.root}/scripts/installers/graalvm.sh",
+                        "${path.root}/scripts/installers/zstd.sh"
                         ]
   }
 
@@ -379,7 +388,13 @@ build {
   provisioner "file" {
     destination = "${path.root}/Ubuntu2204-Readme.md"
     direction   = "download"
-    source      = "${var.image_folder}/Ubuntu-Readme.md"
+    source      = "${var.image_folder}/software-report.md"
+  }
+
+  provisioner "file" {
+    destination = "${path.root}/software-report.json"
+    direction   = "download"
+    source      = "${var.image_folder}/software-report.json"
   }
 
   provisioner "shell" {
