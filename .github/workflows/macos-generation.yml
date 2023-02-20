@@ -102,7 +102,7 @@ jobs:
         -var="vcenter_datacenter=${{ env.VCENTER_DATACENTER }}" `
         -var="cluster_or_esxi_host=${{ env.ESXI_CLUSTER }}" `
         -var="esxi_datastore=${{ env.BUILD_DATASTORE }}" `
-        -var="output_folder=${{ env.MMS_OUTPUT }}" `
+        -var="output_folder=${{ env.OUTPUT_FOLDER }}" `
         -var="vm_username=${{ secrets.VM_USERNAME }}" `
         -var="vm_password=${{ secrets.VM_PASSWORD }}" `
         -var="github_api_pat=${{ secrets.GH_FEED_TOKEN }}" `
