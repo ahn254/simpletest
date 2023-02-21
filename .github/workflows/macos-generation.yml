@@ -45,6 +45,7 @@ defaults:
 jobs:
   build:
     runs-on: maccloudv2
+    timeout-minutes: 1000
     steps:
     - name: set Virtual Machine Name
       shell: pwsh
