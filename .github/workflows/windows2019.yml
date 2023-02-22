@@ -1,0 +1,27 @@
+on:
+  workflow_dispatch:
+    inputs:
+      CUSTOM_REPOSITORY:
+        description: 'Custom repository (owner/repo)'
+        required: false
+      CUSTOM_REPOSITORY_HASH:
+        description: 'Commit hash'
+        required: false
+  pull_request_target:
+    types: labeled
+    paths:
+    - 'images/win/**'
+  schedule:
+    - cron: '0 0 * * *'
+  
+jobs:
+  Windows_2019:
+    #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2004') }}
+    if: ${{ (github.event.label.name == 'windows-all') || (github.event.label.name == 'windows-2019') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
+    uses: ./.github/workflows/ubuntu-win-generation.yml
+    with:
+      image_name: 'windows2019'
+      image_readme_name: 'Windows2019-Readme.md'
+      custom_repo: ${{ github.event.inputs.CUSTOM_REPOSITORY }}
+      custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
+    secrets: inherit
