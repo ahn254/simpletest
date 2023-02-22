@@ -1,3 +1,4 @@
+run-name: ubuntu-2004_${{ github.run_id }} - ${{ github.event.pull_request.title }}
 on:
   workflow_dispatch:
     inputs:
