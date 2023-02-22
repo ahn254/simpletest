@@ -47,21 +47,31 @@ jobs:
     runs-on: maccloudv2
     timeout-minutes: 1000
     steps:
-    - name: set Virtual Machine Name
-      shell: pwsh
-      run: |
-        #$virtualMachineName = ${{ inputs.virtualMachineName }}
-        #echo "current_date=$todayte" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        write-host ${{ inputs.virtualMachineName }}
-               
-    - uses: actions/checkout@v3
+    #- uses: actions/checkout@v3
+    - name: Checkout repository
+      if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
+      uses: actions/checkout@v3
+      with:
+        repository: actions/runner-images
+          
+    - name: Checkout PR
+      if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' }}
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+          
+    - name: Checkout custom repository
+      if: ${{ inputs.custom_repo != '' && inputs.custom_repo_hash != ''  }}
+      uses: actions/checkout@v3
+      with:
+        repository: '${{ inputs.custom_repo }}'
+        ref: '${{ inputs.custom_repo_hash }}'
     
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Validate contributor permissions
-      #if: ${{ startsWith(github.ref, 'refs/pull/') == true }}
       if: ${{ github.event_name == 'pull_request_target' }}
       run: |
         $GitHubFeed = az keyvault secret show -n "github-feed-token" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
