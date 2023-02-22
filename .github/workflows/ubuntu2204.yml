@@ -16,10 +16,25 @@ on:
     - cron: '0 0 * * *'
   
 jobs:
+  update_vars:
+    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
+    name: Update Variables
+    runs-on: windows-latest
+    steps:
+      - name: run api
+        shell: pwsh
+        run: |
+          $todayte = Get-Date -Format "yyyyMMdd"
+          $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
+          $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
+          $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
+          Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+
   Ubuntu_2204:
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2204') }}
     if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
+    needs: update_vars
     with:
       image_name: 'ubuntu2204'
       image_readme_name: 'Ubuntu2204-Readme.md'
