@@ -1,4 +1,4 @@
-run-name: ubuntu-2004_${{ github.run_id }} - ${{ github.event.pull_request.title }}
+run-name: ubuntu-2004_${{ github.run_id }} - ${{ (github.event.pull_request.title || github.event.head_commit.message) }}
 on:
   workflow_dispatch:
     inputs:
