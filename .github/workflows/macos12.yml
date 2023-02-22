@@ -21,11 +21,8 @@ jobs:
   update_vars:
     name: Update Variables
     runs-on: windows-latest
-    outputs:
-      virtualMachineName: ${{ steps.run_api.outputs.virtualMachineName }}
     steps:
       - name: run api
-        id: run_api
         shell: pwsh
         run: |
           $todayte = Get-Date -Format "yyyyMMdd"
