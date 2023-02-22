@@ -1,3 +1,4 @@
+run-name: ${{ vars.current_date }}.${{ github.run_attempt }} - ${{ (github.event.pull_request.title || 'scheduled/manual run') }}
 on:
   workflow_dispatch:
     inputs:
