@@ -25,6 +25,7 @@ defaults:
 jobs:
   build:
     runs-on: ci-agent
+    timeout-minutes: 1200
     steps:
       - name: Checkout repository
         if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
