@@ -1,4 +1,4 @@
-run-name: ubuntu-2004_${{ github.run_id }} - ${{ (github.event.pull_request.title || github.event.head_commit.message) }}
+run-name: ${{ vars.current_date }}.${{ github.run_attempt }} - ${{ (github.event.pull_request.title || 'scheduled/manual run') }}
 on:
   workflow_dispatch:
     inputs:
@@ -16,6 +16,19 @@ on:
     - cron: '0 0 * * *'
   
 jobs:
+  update_vars:
+    name: Update Variables
+    runs-on: windows-latest
+    steps:
+      - name: run api
+        shell: pwsh
+        run: |
+          $todayte = Get-Date -Format "yyyyMMdd"
+          $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
+          $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
+          $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
+          Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+          
   Ubuntu_2004:
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2004') }}
     if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2004') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
