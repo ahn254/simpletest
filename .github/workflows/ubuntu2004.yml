@@ -17,6 +17,7 @@ on:
   
 jobs:
   update_vars:
+    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2004') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     name: Update Variables
     runs-on: windows-latest
     steps:
@@ -33,6 +34,7 @@ jobs:
     #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2004') }}
     if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2004') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
+    needs: update_vars
     with:
       image_name: 'ubuntu2004'
       image_readme_name: 'Ubuntu2004-Readme.md'
