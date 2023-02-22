@@ -45,7 +45,7 @@ defaults:
 jobs:
   build:
     runs-on: maccloudv2
-    timeout-minutes: 1000
+    timeout-minutes: 1200
     steps:
     #- uses: actions/checkout@v3
     - name: Checkout repository
