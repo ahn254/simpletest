@@ -1,3 +1,4 @@
+run-name: ${{ vars.current_date }}.${{ github.run_attempt }} - ${{ (github.event.pull_request.title || 'scheduled/manual run') }}
 on:
   workflow_dispatch:
     inputs:
@@ -15,9 +16,24 @@ on:
     - cron: '0 0 * * *'
   
 jobs:
+  update_vars:
+    if: ${{ (github.event.label.name == 'windows-all') || (github.event.label.name == 'windows-2022') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
+    name: Update Variables
+    runs-on: windows-latest
+    steps:
+      - name: run api
+        shell: pwsh
+        run: |
+          $todayte = Get-Date -Format "yyyyMMdd"
+          $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
+          $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
+          $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
+          Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+
   Windows_2022:
     if: ${{ (github.event.label.name == 'windows-all') || (github.event.label.name == 'windows-2022') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
+    needs: update_vars
     with:
       image_name: 'windows2022'
       image_readme_name: 'Windows2022-Readme.md'
