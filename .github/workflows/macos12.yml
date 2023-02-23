@@ -1,5 +1,3 @@
-#run-name: macOS-12_$(date:yyyyMMdd)$(rev:.r)_unstable
-#run-name: macOS-12_${{ vars.current_date }}_unst.${{ github.run_id}}.${{ github.run_attempt }}
 run-name: macOS-12_${{ vars.current_date }}_unstable.${{ github.run_id }}.${{ github.run_attempt }}
 on:
   workflow_dispatch:
@@ -20,6 +18,7 @@ on:
 jobs:
   update_vars:
     name: Update Variables
+    if: ${{ (github.event.label.name == 'macos-all') || (github.event.label.name == 'macos-12') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     runs-on: windows-latest
     steps:
       - name: run api
@@ -32,8 +31,7 @@ jobs:
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
 
   macOS_12:
-    if: ${{ (github.event.label.name == 'macos-all') || (github.event.label.name == 'macos-12') 
-      || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
+    if: ${{ (github.event.label.name == 'macos-all') || (github.event.label.name == 'macos-12') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     name: macOS-12_${{ vars.current_date }}_unstable.${{ github.run_id }}.${{ github.run_attempt }}
     needs: update_vars
     uses: ./.github/workflows/macos-generation.yml
