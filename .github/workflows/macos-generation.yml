@@ -167,37 +167,37 @@ jobs:
         path: /artifacts/
 
     - name: Print provisioners duration
-        run: |
-          ./images.CI/measure-provisioners-duration.ps1 `
-            -PackerLogPath "${{ runner.temp }}/packer-log.txt" `
-            -PrintTopNLongest 25
+      run: |
+        ./images.CI/measure-provisioners-duration.ps1 `
+          -PackerLogPath "${{ runner.temp }}/packer-log.txt" `
+          -PrintTopNLongest 25
 
     - name: Move vm to cold storage and clear datastore tag
-        run: |
-          $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-          $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-          $cpuCount = 3
-          $coresPerSocketCount = 3
-          $memory = 14336
+      run: |
+        $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+        $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+        $cpuCount = 3
+        $coresPerSocketCount = 3
+        $memory = 14336
 
-          ./images.CI/macos/move-vm.ps1 `
-            -VMName "${{ inputs.virtualMachineName }}" `
-            -TargetDataStore "${{ inputs.target_datastore }}" `
-            -VIServer "${{ secrets.VISERVER_V2 }}" `
-            -VIUserName "$VIUserName" `
-            -VIPassword "$VIPassword" `
-            -CpuCount "$cpuCount" `
-            -CoresPerSocketCount "$coresPerSocketCount" `
-            -Memory "$memory"
+        ./images.CI/macos/move-vm.ps1 `
+          -VMName "${{ inputs.virtualMachineName }}" `
+          -TargetDataStore "${{ inputs.target_datastore }}" `
+          -VIServer "${{ secrets.VISERVER_V2 }}" `
+          -VIUserName "$VIUserName" `
+          -VIPassword "$VIPassword" `
+          -CpuCount "$cpuCount" `
+          -CoresPerSocketCount "$coresPerSocketCount" `
+          -Memory "$memory"
 
     - name: Destroy VM (if build canceled only)
       if: ${{ cancelled() }}
-        run: |
-          $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-          $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+      run: |
+        $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+        $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
 
-          ./images.CI/macos/destroy-vm.ps1 `
-            -VMName "${{ inputs.virtualMachineName }}" `
-            -VIServer "${{ secrets.VISERVER_V2 }}" `
-            -VIUserName "$VIUserName" `
-            -VIPassword "$VIPassword"
+        ./images.CI/macos/destroy-vm.ps1 `
+          -VMName "${{ inputs.virtualMachineName }}" `
+          -VIServer "${{ secrets.VISERVER_V2 }}" `
+          -VIUserName "$VIUserName" `
+          -VIPassword "$VIPassword"
