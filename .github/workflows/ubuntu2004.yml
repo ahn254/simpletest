@@ -31,7 +31,6 @@ jobs:
           Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
           
   Ubuntu_2004:
-    #if: ${{ contains(github.event.pull_request.labels.*.name, 'ubuntu-all') || contains(github.event.pull_request.labels.*.name, 'ubuntu-2004') }}
     if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2004') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
     needs: update_vars
