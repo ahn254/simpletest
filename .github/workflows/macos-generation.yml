@@ -41,7 +41,7 @@ env:
 defaults:
   run:
     shell: pwsh
-    
+
 jobs:
   build:
     runs-on: maccloudv2
@@ -53,24 +53,24 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: actions/runner-images
-          
+
     - name: Checkout PR
       if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' }}
       uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.sha }}
-          
+
     - name: Checkout custom repository
       if: ${{ inputs.custom_repo != '' && inputs.custom_repo_hash != ''  }}
       uses: actions/checkout@v3
       with:
         repository: '${{ inputs.custom_repo }}'
         ref: '${{ inputs.custom_repo_hash }}'
-    
+
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
+
     - name: Validate contributor permissions
       if: ${{ github.event_name == 'pull_request_target' }}
       run: |
@@ -81,27 +81,26 @@ jobs:
           -AccessToken $GitHubFeed `
           -SourceBranch "refs/pull/${{ github.event.pull_request.number }}/merge" `
           -ContributorAllowList $contributorAllowList
-        
-        
+
     - name: Select datastore
       run: |
         $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-        
+
         ./images.CI/macos/select-datastore.ps1 `
           -VMName "${{ inputs.virtualMachineName }}" `
           -VIServer ${{ secrets.VISERVER_V2 }} `
           -VIUserName $VIUserName `
           -VIPassword $VIPassword `
           -Cluster ${{ env.ESXI_CLUSTER }}
-        
+
     - name: Build VM
       run: |
         $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $XcodeUser = az keyvault secret show -n "xcode-installation-user" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $XcodePassword =  az keyvault secret show -n "xcode-installation-password" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-        
+
         $SensitiveData = @(
           'IP address:',
           'Using ssh communicator to connect:'
@@ -133,3 +132,72 @@ jobs:
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
+
+    - name: Prepare artifact
+      shell: bash
+      run: |
+        echo "Preparing artifact directory"
+        mkdir -p /artifacts
+        mkdir -p /testResults
+
+        echo "Copy image output files"
+        cp -R "images/image-output/software-report/." "/artifacts"
+
+        echo "Copy test results"
+        cp -R "images/image-output/tests/." "/testResults"
+        ls /testResults
+
+        echo "Put VM name to 'VM_Done_Name' file"
+        echo "${{ inputs.virtualMachineName }}" > "/artifacts/VM_Done_Name"
+
+    - name: Print markdown software report
+      shell: bash
+      run: |
+        cat "/artifacts/systeminfo.md"
+
+    - name: Print json software report
+      shell: bash
+      run: |
+        cat "/artifacts/systeminfo.json"
+
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Built_VM_Artifacts
+        path: /artifacts/
+
+    - name: Print provisioners duration
+        run: |
+          ./images.CI/measure-provisioners-duration.ps1 `
+            -PackerLogPath "${{ runner.temp }}/packer-log.txt" `
+            -PrintTopNLongest 25
+
+    - name: Move vm to cold storage and clear datastore tag
+        run: |
+          $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+          $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+          $cpuCount = 3
+          $coresPerSocketCount = 3
+          $memory = 14336
+
+          ./images.CI/macos/move-vm.ps1 `
+            -VMName "${{ inputs.virtualMachineName }}" `
+            -TargetDataStore "${{ inputs.target_datastore }}" `
+            -VIServer "${{ secrets.VISERVER_V2 }}" `
+            -VIUserName "$VIUserName" `
+            -VIPassword "$VIPassword" `
+            -CpuCount "$cpuCount" `
+            -CoresPerSocketCount "$coresPerSocketCount" `
+            -Memory "$memory"
+
+    - name: Destroy VM (if build canceled only)
+      if: ${{ cancelled() }}
+        run: |
+          $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+          $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
+
+          ./images.CI/macos/destroy-vm.ps1 `
+            -VMName "${{ inputs.virtualMachineName }}" `
+            -VIServer "${{ secrets.VISERVER_V2 }}" `
+            -VIUserName "$VIUserName" `
+            -VIPassword "$VIPassword"
