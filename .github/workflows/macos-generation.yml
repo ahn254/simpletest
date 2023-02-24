@@ -137,34 +137,34 @@ jobs:
       shell: bash
       run: |
         echo "Preparing artifact directory"
-        mkdir -p /artifacts
-        mkdir -p /testResults
+        mkdir -p ${{ runner.temp }}/artifacts
+        mkdir -p ${{ runner.temp }}/testResults
 
         echo "Copy image output files"
-        cp -R "images/image-output/software-report/." "/artifacts"
+        cp -R "images/image-output/software-report/." "${{ runner.temp }}/artifacts"
 
         echo "Copy test results"
-        cp -R "images/image-output/tests/." "/testResults"
-        ls /testResults
+        cp -R "images/image-output/tests/." "${{ runner.temp }}/testResults"
+        ls ${{ runner.temp }}/testResults
 
         echo "Put VM name to 'VM_Done_Name' file"
-        echo "${{ inputs.virtualMachineName }}" > "/artifacts/VM_Done_Name"
+        echo "${{ inputs.virtualMachineName }}" > "${{ runner.temp }}/artifacts/VM_Done_Name"
 
     - name: Print markdown software report
       shell: bash
       run: |
-        cat "/artifacts/systeminfo.md"
+        cat "${{ runner.temp }}/artifacts/systeminfo.md"
 
     - name: Print json software report
       shell: bash
       run: |
-        cat "/artifacts/systeminfo.json"
+        cat "${{ runner.temp }}/artifacts/systeminfo.json"
 
     - name: Publish Artifacts
       uses: actions/upload-artifact@v3
       with:
         name: Built_VM_Artifacts
-        path: /artifacts/
+        path: ${{ runner.temp }}/artifacts/
 
     - name: Print provisioners duration
       run: |
