@@ -46,15 +46,10 @@ jobs:
     - name: Set image varibles
       run: |
         $currentDate = Get-Date -Format "yyyyMMdd"
-        write-host "currenta date - " $currentDate
         $templatePath = "${{ inputs.template_path }}"
         $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
-        write-host "os Name - " $osName
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
-        write-host "vmname - " $virtualMachineName
-        "VM_NAME_B=$virtualMachineName" | Out-File -Append $env:GITHUB_ENV
-        "VM_NAME_A=$virtualMachineName" >> $env:GITHUB_ENV
-        echo "VM_NAME=$virtualMachineName" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        "VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
         
     - name: Checkout repository
       if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
@@ -94,12 +89,9 @@ jobs:
       run: |
         $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-        write-host "${{ env.VM_NAME }}"
-        write-host "${{ env.VM_NAME_A }}"
-        write-host "${{ env.VM_NAME_B }}"
-        write-host "$(VM_NAME)"
+
         ./images.CI/macos/select-datastore.ps1 `
-          -VMName "${{ env.VM_name }}" `
+          -VMName "${{ env.VM_NAME }}" `
           -VIServer ${{ secrets.VISERVER_V2 }} `
           -VIUserName $VIUserName `
           -VIPassword $VIPassword `
@@ -127,7 +119,7 @@ jobs:
         -var="vm_username=${{ secrets.VM_USERNAME }}" `
         -var="vm_password=${{ secrets.VM_PASSWORD }}" `
         -var="github_api_pat=${{ secrets.GH_FEED_TOKEN }}" `
-        -var="build_id=${{ env.VM_name }}" `
+        -var="build_id=${{ env.VM_NAME }}" `
         -var="baseimage_name=${{ inputs.base_image_name }}" `
         -var="xcode_install_user=$XcodeUser" `
         -var="xcode_install_password=$XcodePassword" `
@@ -159,7 +151,7 @@ jobs:
         #ls ${{ runner.temp }}/testResults
 
         echo "Put VM name to 'VM_Done_Name' file"
-        echo "${{ env.VM_name }}" > "${{ runner.temp }}/artifacts/VM_Done_Name"
+        echo "${{ env.VM_NAME }}" > "${{ runner.temp }}/artifacts/VM_Done_Name"
 
     - name: Print markdown software report
       shell: bash
@@ -192,7 +184,7 @@ jobs:
         $memory = 14336
 
         ./images.CI/macos/move-vm.ps1 `
-          -VMName "${{ env.VM_name }}" `
+          -VMName "${{ env.VM_NAME }}" `
           -TargetDataStore "${{ inputs.target_datastore }}" `
           -VIServer "${{ secrets.VISERVER_V2 }}" `
           -VIUserName "$VIUserName" `
@@ -208,7 +200,7 @@ jobs:
         $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
 
         ./images.CI/macos/destroy-vm.ps1 `
-          -VMName "${{ env.VM_name }}" `
+          -VMName "${{ env.VM_NAME }}" `
           -VIServer "${{ secrets.VISERVER_V2 }}" `
           -VIUserName "$VIUserName" `
           -VIPassword "$VIPassword"
