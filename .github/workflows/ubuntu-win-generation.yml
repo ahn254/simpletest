@@ -27,43 +27,52 @@ jobs:
     runs-on: ci-agent
     timeout-minutes: 1200
     steps:
+      - name: Determine checkout type
+        run: |
+          if ("${{ inputs.custom_repo }}" -and "${{ inputs.custom_repo_commit_hash }}") {
+              $checkoutType = "custom_repo"
+          } elseif (("${{ github.event_name }}" -eq "pull_request_target") -and ("${{ github.event.action }}" -eq "labeled" )) {
+              $checkoutType = "pull_request"
+          } else {
+              $checkoutType = "main"
+          }
+          "CHECKOUT_TYPE=$checkoutType" | Out-File -Append $env:GITHUB_ENV
+
       - name: Checkout repository
-        if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
+        if: ${{ env.CHECKOUT_TYPE == 'main' }}
         uses: actions/checkout@v3
         with:
           repository: actions/runner-images
-          
+
       - name: Checkout PR
-        if: ${{ github.event_name == 'pull_request_target' && github.event.action == 'labeled' }}
+        if: ${{ env.CHECKOUT_TYPE == 'pull_request' }}
         uses: actions/checkout@v3
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-          
+
       - name: Checkout custom repository
-        if: ${{ inputs.custom_repo != '' && inputs.custom_repo_hash != ''  }}
+        if: ${{ env.CHECKOUT_TYPE == 'custom_repo' }}
         uses: actions/checkout@v3
         with:
           repository: '${{ inputs.custom_repo }}'
-          ref: '${{ inputs.custom_repo_hash }}'
-    
+          ref: '${{ inputs.custom_repo_commit_hash }}'
+
       - name: Set image varibles
         run: |
           $ImageType = "${{ inputs.image_name }}"
 
           if ($ImageType.StartsWith("ubuntu")) { $TemplateDirectoryName = "linux" } else { $TemplateDirectoryName = "win" }
-          
+
           $TemplateDirectoryPath = Join-Path "images" $TemplateDirectoryName | Resolve-Path
           $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
-          
+
           if ( -not (Test-Path $TemplatePath) ) {
             $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
-          } 
-          
-          echo "::set-env name=TemplatePath::$TemplatePath"
-          echo "::set-env name=TemplateDirectoryPath::$TemplateDirectoryPath"
-          echo "::set-env name=ImageType::$ImageType"
-        env:
-           ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+          }
+
+          "TemplatePath=$TemplatePath" >> $env:GITHUB_ENV
+          "TemplateDirectoryPath=$TemplateDirectoryPath" >> $env:GITHUB_ENV
+          "ImageType=$ImageType" >> $env:GITHUB_ENV
           
       - name: Build image
         run: |
