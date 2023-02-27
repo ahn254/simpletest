@@ -53,7 +53,8 @@ jobs:
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
         write-host "vmname - " $virtualMachineName
         #"VM_NAME=$virtualMachineName" | Out-File -Append $env:GITHUB_ENV
-        "VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
+        #"VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
+        echo "VM_NAME=$virtualMachineName" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         
     - name: Checkout repository
       if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
