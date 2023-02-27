@@ -48,7 +48,7 @@ jobs:
         $currentDate = Get-Date -Format "yyyyMMdd"
         $templatePath = "${{ inputs.template_path }}"
         $osName = ($templatePath.Split("/")[-1]).Split(".")[0]
-        $virtualMachineName = "$osName_$currentDate_unstable.${{ github.run_id }}.${{ github.run_attempt }}
+        $virtualMachineName = "$osName_$currentDate_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
         write-host $virtualMachineName
         "VM_NAME=$virtualMachineName" | Out-File -Append $env:GITHUB_ENV
         
