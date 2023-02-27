@@ -63,19 +63,19 @@ jobs:
         "CHECKOUT_TYPE=$checkoutType" | Out-File -Append $env:GITHUB_ENV
 
     - name: Checkout repository
-      if: ${{ env.CHECKOUT_TYPE == "main" }}
+      if: ${{ env.CHECKOUT_TYPE == 'main' }}
       uses: actions/checkout@v3
       with:
         repository: actions/runner-images
 
     - name: Checkout PR
-      if: ${{ env.CHECKOUT_TYPE == "pull_request" }}
+      if: ${{ env.CHECKOUT_TYPE == 'pull_request' }}
       uses: actions/checkout@v3
       with:
         ref: ${{ github.event.pull_request.head.sha }}
 
     - name: Checkout custom repository
-      if: ${{ env.CHECKOUT_TYPE == "custom_repo" }}
+      if: ${{ env.CHECKOUT_TYPE == 'custom_repo' }}
       uses: actions/checkout@v3
       with:
         repository: '${{ inputs.custom_repo }}'
