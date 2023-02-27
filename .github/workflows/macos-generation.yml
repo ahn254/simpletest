@@ -55,7 +55,7 @@ jobs:
       run: |
         if ("${{ inputs.custom_repo }}" -and "${{ inputs.custom_repo_hash }}") {
             $checkoutType = "custom_repo"
-        } elseif (("${{ github.event_name }}" -eq "pull_request_target") -and (${{ github.event.action }} -eq "labeled" )) {
+        } elseif (("${{ github.event_name }}" -eq "pull_request_target") -and ("${{ github.event.action }}" -eq "labeled" )) {
             $checkoutType = "pull_request"
         } else {
             $checkoutType = "main"
