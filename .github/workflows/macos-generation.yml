@@ -47,7 +47,15 @@ jobs:
     runs-on: maccloudv2
     timeout-minutes: 1200
     steps:
-    #- uses: actions/checkout@v3
+    - name: Set image varibles
+      run: |
+        $currentDate = Get-Date -Format "yyyyMMdd"
+        $templatePath = "${{ inputs.template_path }}"
+        $osName = ($templatePath.Split("/")[-1]).Split(".")[0]
+        $virtualMachineName = "$osName_$currentDate_unstable.${{ github.run_id }}.${{ github.run_attempt }}
+        write-host $virtualMachineName
+        "VM_NAME=$virtualMachineName" | Out-File -Append $env:GITHUB_ENV
+        
     - name: Checkout repository
       if: ${{ (inputs.custom_repo == '' && inputs.custom_repo_hash == '') || github.event_name != 'pull_request_target'  }}
       uses: actions/checkout@v3
@@ -86,9 +94,9 @@ jobs:
       run: |
         $VIUserName = az keyvault secret show -n "vcenter-username-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         $VIPassword = az keyvault secret show -n "vcenter-password-v2" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
-
+        write-host "${{ env.VM_name }}"
         ./images.CI/macos/select-datastore.ps1 `
-          -VMName "${{ inputs.virtualMachineName }}" `
+          -VMName "${{ env.VM_name }}" `
           -VIServer ${{ secrets.VISERVER_V2 }} `
           -VIUserName $VIUserName `
           -VIPassword $VIPassword `
