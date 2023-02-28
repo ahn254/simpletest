@@ -43,13 +43,17 @@ jobs:
     runs-on: maccloudv2
     timeout-minutes: 1200
     steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Set image varibles
       run: |
         $currentDate = Get-Date -Format "yyyyMMdd"
         $templatePath = "${{ inputs.template_path }}"
         $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
-        $testSecret = "${{ secrets.TEST_SECRET }}"
+        $testSecret = az keyvault secret show -n "dummy" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         "VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
         "TST_SEC=$testSecret" >> $env:GITHUB_ENV
 
@@ -82,10 +86,6 @@ jobs:
       with:
         repository: '${{ inputs.custom_repo }}'
         ref: '${{ inputs.custom_repo_hash }}'
-
-    - uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Validate contributor permissions
       if: ${{ github.event_name == 'pull_request_target' }}
