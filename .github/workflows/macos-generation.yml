@@ -55,6 +55,7 @@ jobs:
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
         $testSecret = az keyvault secret show -n "dummy" --vault-name "${{ env.KEYVAULT }}" --query value -o tsv
         "VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
+        echo "::add-mask::$testSecret"
         "TST_SEC=$testSecret" >> $env:GITHUB_ENV
 
     - name: Determine checkout type
