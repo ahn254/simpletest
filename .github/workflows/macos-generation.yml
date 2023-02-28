@@ -49,7 +49,7 @@ jobs:
         $templatePath = "${{ inputs.template_path }}"
         $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
-        $testSecret = ${{ secrets.TEST_SECRET }}
+        $testSecret = "${{ secrets.TEST_SECRET }}"
         "VM_NAME=$virtualMachineName" >> $env:GITHUB_ENV
         "TST_SEC=$testSecret" >> $env:GITHUB_ENV
 
