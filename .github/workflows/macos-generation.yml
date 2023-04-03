@@ -193,7 +193,7 @@ jobs:
         $cpuCount = 3
         $coresPerSocketCount = 3
         $memory = 14336
-
+        write-host "${{ job.status }}"
         ./images.CI/macos/move-vm.ps1 `
           -VMName "${{ env.VM_NAME }}" `
           -TargetDataStore "${{ inputs.target_datastore }}" `
