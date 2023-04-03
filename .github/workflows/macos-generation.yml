@@ -203,6 +203,7 @@ jobs:
           -CpuCount "$cpuCount" `
           -CoresPerSocketCount "$coresPerSocketCount" `
           -Memory "$memory"
+          -JobStatus "${{ job.status }}"
 
     - name: Destroy VM (if build canceled only)
       if: ${{ cancelled() }}
