@@ -40,6 +40,8 @@ param(
     [Parameter(Mandatory)]
     [ValidateNotNullOrEmpty()]
     [string]$VIPassword,
+    
+    [string]$JobStatus,
 
     [int32]$CpuCount,
 
@@ -62,7 +64,7 @@ try {
 }
 
 $vm = Get-VM $VMName
-if ($env:AGENT_JOBSTATUS -eq 'Failed') {
+if (($env:AGENT_JOBSTATUS -and $env:AGENT_JOBSTATUS -eq 'Failed') -or ($JobStatus -and $JobStatus -eq 'failed')) {
     try {
         if($vm.PowerState -ne "PoweredOff") {
             Stop-VM -VM $vm -Confirm:$false -ErrorAction Stop | Out-Null
