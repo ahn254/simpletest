@@ -200,10 +200,11 @@ jobs:
           -VIServer "${{ secrets.VISERVER_V2 }}" `
           -VIUserName "${{ env.VI_USER_NAME }}" `
           -VIPassword "${{ env.VI_PASSWORD }}" `
+          -JobStatus "${{ job.status }}" `
           -CpuCount "$cpuCount" `
           -CoresPerSocketCount "$coresPerSocketCount" `
-          -Memory "$memory" `
-          -JobStatus "${{ job.status }}"
+          -Memory "$memory" 
+          
 
     - name: Destroy VM (if build canceled only)
       if: ${{ cancelled() }}
