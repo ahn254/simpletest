@@ -64,7 +64,7 @@ try {
 }
 
 $vm = Get-VM $VMName
-if (($env:AGENT_JOBSTATUS -and $env:AGENT_JOBSTATUS -eq 'Failed') -or ($JobStatus -and $JobStatus -eq 'failed')) {
+if (($env:AGENT_JOBSTATUS -and $env:AGENT_JOBSTATUS -eq 'Failed') -or ($JobStatus -and $JobStatus -eq 'failure')) {
     try {
         if($vm.PowerState -ne "PoweredOff") {
             Stop-VM -VM $vm -Confirm:$false -ErrorAction Stop | Out-Null
