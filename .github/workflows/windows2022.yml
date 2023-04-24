@@ -12,8 +12,8 @@ on:
     types: labeled
     paths:
     - 'images/win/**'
-  schedule:
-    - cron: '0 0 * * *'
+ # schedule:
+ #   - cron: '0 0 * * *'
   
 jobs:
   update_vars:
