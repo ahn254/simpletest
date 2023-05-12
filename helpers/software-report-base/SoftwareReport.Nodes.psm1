@@ -157,7 +157,7 @@ class HeaderNode: BaseNode {
 }
 
 class ToolVersionNode: BaseToolNode {
-    [ValidateNotNullOrEmpty()]
+    #[ValidateNotNullOrEmpty()]
     [String] $Version
 
     ToolVersionNode([String] $ToolName, [String] $Version): base($ToolName) {
@@ -186,7 +186,7 @@ class ToolVersionNode: BaseToolNode {
 }
 
 class ToolVersionsListNode: BaseToolNode {
-    [ValidateNotNullOrEmpty()]
+    #[ValidateNotNullOrEmpty()]
     [String[]] $Versions
 
     [Regex] $MajorVersionRegex
@@ -254,7 +254,7 @@ class ToolVersionsListNode: BaseToolNode {
 
 class TableNode: BaseNode {
     # It is easier to store the table as rendered lines because it will simplify finding differences in rows later
-    [ValidateNotNullOrEmpty()]
+    #[ValidateNotNullOrEmpty()]
     [String] $Headers
     [ValidateNotNullOrEmpty()]
     [String[]] $Rows
