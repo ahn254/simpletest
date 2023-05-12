@@ -28,7 +28,7 @@ jobs:
     # "azure-builds" is dedicated runner not available in forks.
     # to reduce undesired run attempts in forks, stick jobs to "actions" organization only
     #
-    runs-on: azure-builds
+    runs-on: ci-agent
     if: ${{ github.repository_owner == 'AleAiu' }}
     timeout-minutes: 1200
     steps:
