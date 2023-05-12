@@ -613,21 +613,6 @@ function Build-MiscellaneousEnvironmentTable {
     }
 }
 
-function Get-GraalVMVersion {
-    $version = & "$env:GRAALVM_11_ROOT\java" --version | Select-String -Pattern "GraalVM" | Take-Part -Part 5,6
-    return $version
-}
-
-function Build-GraalVMTable {
-    $version = Get-GraalVMVersion
-    $envVariables = "GRAALVM_11_ROOT"
-
-    return [PSCustomObject] @{
-        "Version" = $version
-        "Environment variables" = $envVariables
-    }
-}
-
 function Get-CodeQLBundleVersions {
     $CodeQLVersionsWildcard = Join-Path $Env:AGENT_TOOLSDIRECTORY -ChildPath "CodeQL" | Join-Path -ChildPath "*"
     $CodeQLVersionPaths = Get-ChildItem $CodeQLVersionsWildcard 
@@ -644,4 +629,9 @@ function Get-CodeQLBundleVersions {
 function Get-ColimaVersion {
     $colimaVersion = Run-Command "colima version" | Select-String "colima version" | Take-Part -Part 2
     return $colimaVersion
+}
+
+function Get-PKGConfigVersion {
+    $pkgconfigVersion = Run-Command "pkg-config --version"
+    return $pkgconfigVersion
 }

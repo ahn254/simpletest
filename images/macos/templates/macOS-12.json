@@ -213,7 +213,6 @@
                 "./provision/core/pypy.sh",
                 "./provision/core/pipx-packages.sh",
                 "./provision/core/bicep.sh",
-                "./provision/core/graalvm.sh",
                 "./provision/core/codeql-bundle.sh"
             ],
             "environment_vars": [
@@ -234,6 +233,11 @@
             "scripts": [
                 "./provision/core/delete-duplicate-sims.rb"
             ]
+        },
+        {
+            "type": "shell",
+            "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} pwsh -f {{ .Path }}",
+            "script": "./provision/core/fix-xcode-simulators.ps1"
         },
         {
             "type": "shell",

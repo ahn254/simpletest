@@ -226,7 +226,6 @@ build {
       "./provision/core/pypy.sh",
       "./provision/core/pipx-packages.sh",
       "./provision/core/bicep.sh",
-      "./provision/core/graalvm.sh",
       "./provision/core/codeql-bundle.sh"
     ]
     environment_vars = [
@@ -244,6 +243,10 @@ build {
   provisioner "shell" {
     script = "./provision/core/delete-duplicate-sims.rb"
     execute_command = "source $HOME/.bash_profile; ruby {{ .Path }}"
+  }
+  provisioner "shell" {
+      script = "./provision/core/fix-xcode-simulators.ps1"
+      execute_command = "chmod +x {{ .Path }}; {{ .Vars }} pwsh -f {{ .Path }}"
   }
   provisioner "shell" {
     inline = [

@@ -79,13 +79,13 @@ Describe "Docker" {
     It "docker-credential-ecr-login" {
         "docker-credential-ecr-login -v" | Should -ReturnZeroExitCode
     }
+}
 
-    Context "docker images" {
-        $testCases = (Get-ToolsetContent).docker.images | ForEach-Object { @{ ImageName = $_ } }
+Describe "Docker images" {
+    $testCases = (Get-ToolsetContent).docker.images | ForEach-Object { @{ ImageName = $_ } }
 
-        It "<ImageName>" -TestCases $testCases {
-           sudo docker images "$ImageName" --format "{{.Repository}}" | Should -Not -BeNullOrEmpty
-        }
+    It "<ImageName>" -TestCases $testCases {
+       sudo docker images "$ImageName" --format "{{.Repository}}" | Should -Not -BeNullOrEmpty
     }
 }
 
@@ -326,17 +326,8 @@ Describe "Pulumi" {
 
 Describe "Phantomjs" -Skip:(Test-IsUbuntu22) {
     It "phantomjs" {
+        $env:OPENSSL_CONF="/etc/ssl"; phantomjs --version
         "phantomjs --version" | Should -ReturnZeroExitCode
-    }
-}
-
-Describe "GraalVM" -Skip:(Test-IsUbuntu18) {
-    It "graalvm" {
-        '$GRAALVM_11_ROOT/bin/java -version' | Should -ReturnZeroExitCode
-    }
-
-    It "native-image" {
-        '$GRAALVM_11_ROOT/bin/native-image --version' | Should -ReturnZeroExitCode
     }
 }
 

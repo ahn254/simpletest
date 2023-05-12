@@ -12,7 +12,8 @@ on:
     types: labeled
     paths:
     - 'images/macos/**'
-
+  schedule:
+    - cron: '0 0 * * *'
 
 jobs:
   macOS_12:

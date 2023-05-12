@@ -14,8 +14,10 @@ if ([string]::IsNullOrEmpty($env:XCODE_INSTALL_USER) -or [string]::IsNullOrEmpty
 # https://github.com/fastlane/fastlane/pull/18116
 $env:SPACESHIP_SKIP_2FA_UPGRADE = 1
 
-$os = Get-OSVersion
-[Array]$xcodeVersions = Get-ToolsetValue "xcode.versions"
+$ARCH = arch
+if ($ARCH -ne "arm64") { $ARCH = "x64" }
+[Array]$xcodeVersions = Get-ToolsetValue "xcode.$ARCH.versions"
+write-host $xcodeVersions
 $defaultXcode = Get-ToolsetValue "xcode.default"
 [Array]::Reverse($xcodeVersions)
 $threadCount = "5"
@@ -33,8 +35,12 @@ $xcodeVersions | ForEach-Object -ThrottleLimit $threadCount -Parallel {
 
 Write-Host "Configuring Xcode versions..."
 $xcodeVersions | ForEach-Object {
+    Write-Host "Configuring Xcode $($_.link) ..."
+
     Invoke-XcodeRunFirstLaunch -Version $_.link
+    Install-AdditionalSimulatorRuntimes -Version $_.link
 }
+
 Invoke-XcodeRunFirstLaunch -Version $defaultXcode
 
 Write-Host "Configuring Xcode symlinks..."
@@ -44,16 +50,6 @@ $xcodeVersions | ForEach-Object {
     # Skip creating symlink to install multiple releases of the same Xcode version side-by-side
     if ($_."skip-symlink" -ne "true") {
         Build-ProvisionatorSymlink -Version $_.link
-    }
-}
-
-$xcodeVersions | ForEach-Object {
-    if ($_.link.StartsWith("14.")) {
-        Write-Host "Installing Simulator Runtimes..."
-
-        # tvOS and watchOS simulators are not included by default
-        $xcodebuildPath = Get-XcodeToolPath -Version $_.link -ToolName "xcodebuild"
-        Invoke-ValidateCommand "$xcodebuildPath -downloadAllPlatforms"
     }
 }
 
@@ -68,4 +64,3 @@ New-Item -Path "/Applications/Xcode.app" -ItemType SymbolicLink -Value (Get-Xcod
 
 Write-Host "Setting environment variables 'XCODE_<VERSION>_DEVELOPER_DIR'"
 Set-XcodeDeveloperDirEnvironmentVariables -XcodeList $xcodeVersions.link
-

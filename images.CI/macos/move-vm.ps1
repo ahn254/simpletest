@@ -40,7 +40,7 @@ param(
     [Parameter(Mandatory)]
     [ValidateNotNullOrEmpty()]
     [string]$VIPassword,
-    
+
     [string]$JobStatus,
 
     [int32]$CpuCount,

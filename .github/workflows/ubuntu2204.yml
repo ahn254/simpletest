@@ -1,42 +1,27 @@
-run-name: ${{ vars.current_date }}.${{ github.run_attempt }} - ${{ (github.event.pull_request.title || 'scheduled/manual run') }}
+run-name: Ubuntu22.04 - ${{ (github.event.pull_request.title || 'scheduled/manual run') }}
 on:
   workflow_dispatch:
     inputs:
       CUSTOM_REPOSITORY:
         description: 'Custom repository (owner/repo)'
         required: false
-      CUSTOM_REPOSITORY_HASH:
+      CUSTOM_REPOSITORY_COMMIT_HASH:
         description: 'Commit hash'
         required: false
   pull_request_target:
     types: labeled
     paths:
     - 'images/linux/**'
-  #schedule:
-  #  - cron: '0 0 * * *'
-  
-jobs:
-  update_vars:
-    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
-    name: Update Variables
-    runs-on: windows-latest
-    steps:
-      - name: run api
-        shell: pwsh
-        run: |
-          $todayte = Get-Date -Format "yyyyMMdd"
-          $uri = "https://api.github.com/repos/AleAiu/simpletest/actions/variables/CURRENT_DATE"
-          $header = @{"Authorization" = "Bearer ${{ secrets.AA_TOKEN }}"}
-          $body = "{`"name`":`"CURRENT_DATE`",`"value`":`"$todayte`"}"
-          Invoke-WebRequest -Method PATCH -Header $header -Uri $uri -Body $body -ContentType "application/json"
+  schedule:
+    - cron: '0 0 * * *'
 
+jobs:
   Ubuntu_2204:
-    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') || (inputs.CUSTOM_REPOSITORY != '' && inputs.CUSTOM_REPOSITORY_HASH != '') || (github.event_name == 'schedule') }}
+    if: ${{ (github.event.label.name == 'ubuntu-all') || (github.event.label.name == 'ubuntu-2204') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'schedule') }}
     uses: ./.github/workflows/ubuntu-win-generation.yml
-    needs: update_vars
     with:
       image_name: 'ubuntu2204'
       image_readme_name: 'Ubuntu2204-Readme.md'
       custom_repo: ${{ github.event.inputs.CUSTOM_REPOSITORY }}
-      custom_repo_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_HASH }}
+      custom_repo_commit_hash: ${{ github.event.inputs.CUSTOM_REPOSITORY_COMMIT_HASH }}
     secrets: inherit

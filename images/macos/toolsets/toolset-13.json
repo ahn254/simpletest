@@ -1,12 +1,20 @@
 {
     "xcode": {
         "default": "14.2",
-        "versions": [
-            {"link": "14.3", "version": "14.3.0"},
-            {"link": "14.2", "version": "14.2.0"},
-            { "link": "14.1", "version": "14.1.0"},
-            { "link": "14.0.1", "version": "14.0.1", "symlinks": ["14.0"] }
-        ]
+        "x64": {
+            "versions": [
+                { "link": "14.3", "version": "14.3.0" },
+                { "link": "14.2", "version": "14.2.0" },
+                { "link": "14.1", "version": "14.1.0" }
+                ]
+        },
+        "arm64":{
+            "versions": [
+                { "link": "14.3", "version": "14.3.0" },
+                { "link": "14.2", "version": "14.2.0" },
+                { "link": "14.1", "version": "14.1.0" }
+            ]
+        }
     },
     "xamarin": {
         "vsmac": {
@@ -15,7 +23,7 @@
         }
     },
     "java": {
-        "default": "8",
+        "default": "17",
         "default_vendor": "Temurin-Hotspot",
         "vendors": [
             {
@@ -44,7 +52,6 @@
     },
     "powershellModules": [
         { "name": "Az" },
-        { "name": "MarkdownPS" },
         { "name": "Pester" },
         { "name": "PSScriptAnalyzer" }
     ],
@@ -56,7 +63,6 @@
             "bazelisk",
             "carthage",
             "cmake",
-            "colima",
             "gh",
             "gnupg",
             "gnu-tar",
@@ -65,25 +71,15 @@
             "p7zip",
             "packer",
             "perl",
-            "sbt",
-            "subversion",
             "swiftformat",
-            "swig",
             "zstd",
             "gmp",
-            "zlib",
-            "libxext",
-            "libxft",
-            "tcl-tk",
             "r",
-            "yq",
-            "imagemagick"
+            "yq"
         ],
         "cask_packages": [
             "julia",
-            "vagrant",
-            "virtualbox",
-            "parallels"
+            "vagrant"
         ]
     },
     "gcc": {
@@ -92,18 +88,19 @@
             "12"
         ]
     },
-    "pipx": [
-        {
-            "package": "yamllint",
-            "cmd": "yamllint --version"
-        }
-    ],
     "dotnet": {
-        "versions": [
-            "3.1",
-            "6.0",
-            "7.0"
-        ]
+        "arch":{
+            "x64": {
+               "versions": [
+                   "7.0"
+                ]
+            },
+            "arm64": {
+                "versions": [
+                    "7.0"
+                ]
+            }
+        }
     },
     "ruby": {
         "default": "3.0",
@@ -112,31 +109,73 @@
             "cocoapods",
             "xcpretty",
             "bundler",
-            "fastlane",
-            "jazzy"
+            "fastlane"
         ]
     },
+    "toolcache": [
+        {
+            "name": "Python",
+            "url" : "https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json",
+            "arch": "x64",
+            "platform" : "darwin",
+            "versions": [
+                "3.8.*",
+                "3.9.*",
+                "3.10.*",
+                "3.11.*"
+            ]
+        },
+        {
+            "name": "PyPy",
+            "arch": "x64",
+            "platform" : "darwin",
+            "versions": [
+                "2.7",
+                "3.7",
+                "3.8",
+                "3.9"
+            ]
+        },
+        {
+            "name": "Node",
+            "url" : "https://raw.githubusercontent.com/actions/node-versions/main/versions-manifest.json",
+            "platform" : "darwin",
+            "arch": "x64",
+            "versions": [
+                "16.*",
+                "18.*"
+            ]
+        },
+        {
+            "name": "Go",
+            "url" : "https://raw.githubusercontent.com/actions/go-versions/main/versions-manifest.json",
+            "arch": "x64",
+            "platform" : "darwin",
+            "variable_template" : "GOROOT_{0}_{1}_X64",
+            "versions": [
+                "1.19.*",
+                "1.20.*"
+            ]
+        },
+        {
+            "name": "Ruby",
+            "arch": "x64",
+            "versions": [
+                "3.0.*",
+                "3.1.*"
+            ]
+        }
+    ],
     "go": {
-        "default": "1.17"
+        "default": "1.20"
     },
     "node": {
-        "default": "16",
-        "nvm_versions": [
-            "14",
-            "16",
-            "18"
-        ]
+        "default": "18"
     },
     "llvm": {
         "version": "15"
     },
     "php": {
         "version": "8.2"
-    },
-    "mongodb": {
-        "version": "5.0"
-    },
-    "postgresql": {
-        "version": "14"
     }
 }
