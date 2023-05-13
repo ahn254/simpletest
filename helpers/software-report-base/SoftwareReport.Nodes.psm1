@@ -256,7 +256,7 @@ class TableNode: BaseNode {
     # It is easier to store the table as rendered lines because it will simplify finding differences in rows later
     #[ValidateNotNullOrEmpty()]
     [String] $Headers
-    [ValidateNotNullOrEmpty()]
+    #[ValidateNotNullOrEmpty()]
     [String[]] $Rows
 
     TableNode([String] $Headers, [String[]] $Rows) {
