@@ -8,6 +8,9 @@ jobs:
     name: Ceck vars
     runs-on: azure-builds
     steps:
+      - name: git checkout
+        uses: actions/checkout@v3
+        
       - name: cat variables output
         shell: bash
         run: |
@@ -15,5 +18,7 @@ jobs:
           echo $GITHUB_WORKSPACE
           echo $RUNNER_WORKSPACE
           ls $RUNNER_WORKSPACE
+          echo $RUNNER_WORKSPACE/$GITHUB_REPOSITORY_OWNER
+          ls $RUNNER_WORKSPACE/$GITHUB_REPOSITORY_OWNER
 
           
