@@ -1,8 +1,11 @@
+name: Tets Vars
+
 on:
   workflow_dispatch:
   
 jobs:
   check_vars:
+    name: Ceck vars
     runs-on: azure-builds
     steps:
       - name: cat variables output
