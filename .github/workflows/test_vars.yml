@@ -14,6 +14,6 @@ jobs:
           echo "list variables"
           echo $GITHUB_WORKSPACE
           echo $RUNNER_WORKSPACE
-          echo $RUNNER_TEMP
-          echo ${ defaults.run.working-directory }
+          ls $RUNNER_WORKSPACE
+
           
