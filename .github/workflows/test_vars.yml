@@ -1,0 +1,14 @@
+on:
+  workflow_dispatch:
+  
+jobs:
+  check_vars:
+    runs-on: azure-builds
+    steps:
+      - name: cat variables output
+        shell: bash
+        run: |
+          echo "list variables"
+          echo $GITHUB_ACTION_PATH
+          echo $RUNNER_TEMP
+          
