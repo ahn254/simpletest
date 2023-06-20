@@ -12,8 +12,8 @@ jobs:
         shell: bash
         run: |
           echo "list variables"
-          echo ${ GITHUB_WORKSPACE }
-          echo ${ defaults.run.working-directory }
+          echo $GITHUB_WORKSPACE
           echo $RUNNER_WORKSPACE
           echo $RUNNER_TEMP
+          echo ${ defaults.run.working-directory }
           
