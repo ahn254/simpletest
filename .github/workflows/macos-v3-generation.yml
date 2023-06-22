@@ -1,0 +1,229 @@
+name: macOS 13 image generation
+on:
+  workflow_call:
+    inputs:
+      image_label:
+        type: string
+        description: macOS codename
+        required: true
+      base_image_name:
+        type: string
+        description: Base clean image
+        required: true
+      template_path:
+        type: string
+        description: Packer template path
+        required: true
+      custom_repo:
+        type: string
+        description: Custom repo to checkout
+        required: false
+      custom_repo_commit_hash:
+        type: string
+        description: Custom repo commit hash
+        required: false
+      remove_vm:
+        type: boolean
+        description: Remove VM from local storage or not
+        required: false
+      push_image:
+        type: boolean
+        description: Push image to the registry or not
+        required: false
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  selectRunner:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.parse_base_image_name.outputs.runner }}
+    steps:
+      - name: parse base image name
+        id: parse_base_image_name
+        run: |
+          if ($baseImageName -match "arm64") {
+            "SHOSTED_RUNNER=macos-veertu-arm64" | Out-File -Append -FilePath $env:GITHUB_ENV
+          } else {
+            "SHOSTED_RUNNER=macos-veertu" | Out-File -Append -FilePath $env:GITHUB_ENV
+          }
+
+  build:
+    #
+    # "macos-veertu" is dedicated runner not available in forks.
+    # to reduce undesired run attempts in forks, stick jobs to "actions" organization only
+    #
+    needs: [selectRunner]
+    runs-on: ${{ needs.selectRunner.outputs.runner }}
+    if: ${{ github.repository_owner == 'AleAiu' }}
+    timeout-minutes: 1200
+    steps:
+    - name: Set image variables
+      run: |
+        write-host "Current runner is ${{ needs.selectRunner.outputs.runner }}""
+        $currentDate = Get-Date -Format "yyyyMMdd"
+        $templatePath = "${{ inputs.template_path }}"
+        $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
+        $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
+        "VM_NAME=$virtualMachineName" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+    - name: Determine checkout type
+      run: |
+        if ("${{ inputs.custom_repo }}" -and "${{ inputs.custom_repo_commit_hash }}") {
+            $checkoutType = "custom_repo"
+        } elseif (("${{ github.event_name }}" -eq "pull_request_target") -and ("${{ github.event.action }}" -eq "labeled" )) {
+            $checkoutType = "pull_request"
+        } else {
+            $checkoutType = "main"
+        }
+        "CHECKOUT_TYPE=$checkoutType" | Out-File -Append $env:GITHUB_ENV
+
+    - name: Checkout repository
+      if: ${{ env.CHECKOUT_TYPE == 'main' }}
+      uses: actions/checkout@v3
+      with:
+        repository: AleAiu/simpletest
+
+    - name: Checkout PR
+      if: ${{ env.CHECKOUT_TYPE == 'pull_request' }}
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.sha }}
+
+    - name: Checkout custom repository
+      if: ${{ env.CHECKOUT_TYPE == 'custom_repo' }}
+      uses: actions/checkout@v3
+      with:
+        repository: '${{ inputs.custom_repo }}'
+        ref: '${{ inputs.custom_repo_commit_hash }}'
+
+    - name: Validate contributor permissions
+      if: ${{ github.event_name == 'pull_request_target' }}
+      run: |
+        [string]$contributorAllowList = "${{ vars.CONTRIBUTOR_ALLOWLIST }}"
+        ./images.CI/macos/validate-contributor.ps1 `
+          -RepositoryName ${{ github.repository }} `
+          -AccessToken ${{ secrets.GH_FEED }} `
+          -SourceBranch "refs/pull/${{ github.event.pull_request.number }}/merge" `
+          -ContributorAllowList $contributorAllowList
+
+    - name: Download vm template
+      run: |
+        ./images.CI/macos/anka/DownloadVMTemplateFromAnkaRegistry.ps1 `
+          -TemplateName "${{ inputs.base_image_name }}" `
+          -RegistryUrl ${{ secrets.RegistryUrl }}
+
+    - name: Create xcversion session cookie file
+      shell: bash
+      run: |
+        mkdir -p ${{ runner.temp }}/xcversion-cookie
+        cookie='${{ secrets.XCVERSION_AUTH_COOKIE }}'
+        echo "$cookie" > ${{ runner.temp }}/xcversion-cookie/cookie
+
+    - name: Clean up self-hosted machine
+      shell: bash
+      run: |
+        rm -rf ./image-generation/packer/images/macos/provision/log/
+
+    - name: Clean up self-hosted machine
+      run: |
+        anka modify ${{ env.VM_NAME }} display -c fbuf
+
+    - name: Build image
+      run: |
+        $SensitiveData = @(
+          'IP address:',
+          'Using ssh communicator to connect:'
+        )
+        $currentDate = Get-Date -Format "yyyyMMdd"
+        $templatePath = "${{ inputs.template_path }}"
+        $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
+        $buildID = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
+         packer build -on-error=abort `
+        -var="build_id=${{ env.VM_NAME }}" `
+        -var="source_vm_name=${{ env.VM_NAME }}" `
+        -var="source_vm_tag=${{ inputs.base_image_tag_name }}" `
+        -var="vm_username=${{ secrets.VM_USERNAME }}" `
+        -var="vm_password=${{ secrets.VM_PASSWORD }}" `
+        -var="github_api_pat=${{ secrets.GH_FEED_TOKEN }}" `
+        -var="xcode_install_user=${{ secrets.XCODE_USER }}" `
+        -var="xcode_install_password=${{ secrets.XCODE_PASSWORD }}" `
+        -var="xcversion_auth_cookie=${{ env.XCVERSION_COOKIE_PATH }}" `
+        -color=false `
+        ${{ inputs.template_path }} `
+        | Where-Object {
+            #Filter sensitive data from Packer logs
+            $currentString = $_
+            $sensitiveString = $SensitiveData | Where-Object { $currentString -match $_ }
+            $sensitiveString -eq $null
+        }
+      working-directory: image-generation/packer/images/macos
+      env:
+        PACKER_LOG: 1
+        PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
+        XCVERSION_COOKIE_PATH: ${{ runner.temp }}/xcversion-cookie/cookie
+
+    - name: Prepare artifact
+      shell: bash
+      run: |
+        echo "Preparing artifact directory"
+        mkdir -p ${{ runner.temp }}/artifacts
+
+        echo "Copy image output files"
+        cp -R "image-generation/packer/images/image-output/software-report/." "${{ runner.temp }}/artifacts"
+
+        echo "Put VM name to 'VM_Done_Name' file"
+        echo "${{ env.VM_NAME }}" > "${{ runner.temp }}/artifacts/VM_Done_Name"
+
+    - name: Print markdown software report
+      run: |
+        Get-Content "${{ runner.temp }}/artifacts/systeminfo.md"
+
+    - name: Print json software report
+      run: |
+        Get-Content "${{ runner.temp }}/artifacts/systeminfo.json"
+
+    - name: Publish Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: Built_VM_Artifacts
+        path: ${{ runner.temp }}/artifacts/
+
+    - name: Print provisioners duration
+      run: |
+        ./images.CI/measure-provisioners-duration.ps1 `
+          -PackerLogPath "${{ runner.temp }}/packer-log.txt" `
+          -PrintTopNLongest 25
+
+    - name: Set video pg controller
+      run: |
+        anka modify ${{ env.VM_NAME }} display -c pg
+
+
+    - name: Set minimal VM size
+      run: |
+        write-host "Set $(Build.BuildNumber) VM size: NumCpu=9; MemoryGb=12GB"
+        anka modify ${{ env.VM_NAME }} ram 12G
+        anka modify ${{ env.VM_NAME }} cpu 9
+        $vm_spec = $(anka --machine-readable show ${{ env.VM_NAME }}
+        $VMram = ($vm_spec | convertfrom-json).body.ram
+        $VMcpu = ($vm_spec | convertfrom-json).body.cpu_cores
+        if (($VMcpu -eq 9)  -and ($VMram -eq "12G")) then
+          write-host "VM was successfully resized"
+        else
+          write-host "VM was not resized, actual NumCpu = $VMcpu; actual MemoryGb = $VMram"
+        fi
+
+    - name: Anka push the image to the registry
+      if: ${{ success() && inputs.push_image == true}}
+      run: |
+        AnkaCaCrtPath="$HOME/.config/anka/certs/anka-ca-crt.pem"
+        $anka_build_output=$(anka registry --cacert $AnkaCaCrtPath -a ${{ secrets.registry_url }} push -t ${{ env.VM_NAME }} ${{ env.VM_NAME }})
+        write-host $anka_build_output
+
+    - name: Anka remove the image from the local storage
+      if: ${{ always() && inputs.remove_vm == true }}
+      run: |
+        anka delete ${{ env.VM_NAME }} --yes
