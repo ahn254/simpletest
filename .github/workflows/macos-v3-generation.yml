@@ -135,6 +135,7 @@ jobs:
           'IP address:',
           'Using ssh communicator to connect:'
         )
+        packer init ${{ inputs.template_path }}
          packer build -on-error=abort `
         -var="build_id=${{ env.VM_NAME }}" `
         -var="source_vm_name=${{ env.VM_NAME }}" `
