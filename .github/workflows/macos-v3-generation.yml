@@ -130,9 +130,9 @@ jobs:
       run: |
         rm -rf ./image-generation/packer/images/macos/provision/log/
 
-    - name: Clean up self-hosted machine
+    - name: Set video fbuf controller
       run: |
-        anka modify ${{ env.VM_NAME }} display -c fbuf
+        anka modify ${{ inputs.base_image_name }} display -c fbuf
 
     - name: Build image
       run: |
@@ -140,10 +140,6 @@ jobs:
           'IP address:',
           'Using ssh communicator to connect:'
         )
-        $currentDate = Get-Date -Format "yyyyMMdd"
-        $templatePath = "${{ inputs.template_path }}"
-        $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
-        $buildID = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
          packer build -on-error=abort `
         -var="build_id=${{ env.VM_NAME }}" `
         -var="source_vm_name=${{ env.VM_NAME }}" `
