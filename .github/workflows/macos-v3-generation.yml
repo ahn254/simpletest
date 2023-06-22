@@ -44,7 +44,7 @@ jobs:
       - name: parse base image name
         id: parse_base_image_name
         run: |
-          if ($baseImageName -match "arm64") {
+          if ("${{ inputs.base_image_name }}" -match "arm64") {
             "runner=macos-veertu-arm64" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
           } else {
             "runner=macos-veertu" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
