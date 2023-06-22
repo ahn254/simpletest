@@ -45,9 +45,9 @@ jobs:
         id: parse_base_image_name
         run: |
           if ($baseImageName -match "arm64") {
-            "SHOSTED_RUNNER=macos-veertu-arm64" | Out-File -Append -FilePath $env:GITHUB_ENV
+            "SHOSTED_RUNNER='macos-veertu-arm64'" | Out-File -Append -FilePath $env:GITHUB_ENV
           } else {
-            "SHOSTED_RUNNER=macos-veertu" | Out-File -Append -FilePath $env:GITHUB_ENV
+            "SHOSTED_RUNNER='macos-veertu'" | Out-File -Append -FilePath $env:GITHUB_ENV
           }
 
   build:
