@@ -62,10 +62,13 @@ jobs:
     steps:
     - name: Set image variables
       run: |
-        write-host "Current runner is ${{ needs.selectRunner.outputs.runner }}""
         $currentDate = Get-Date -Format "yyyyMMdd"
         $templatePath = "${{ inputs.template_path }}"
-        $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
+        if ("${{ inputs.template_path }}" -match "arm64") {
+          $osName = $(($templatePath.Split("/")[-1]).Split(".")[0,1]) -join '.'
+        } else {
+          $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
+        }  
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
         "VM_NAME=$virtualMachineName" | Out-File -Append -FilePath $env:GITHUB_ENV
 
