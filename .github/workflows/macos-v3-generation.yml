@@ -138,7 +138,7 @@ jobs:
         packer init ${{ inputs.template_path }}
          packer build -on-error=abort `
         -var="build_id=${{ env.VM_NAME }}" `
-        -var="source_vm_name=${{ env.VM_NAME }}" `
+        -var="source_vm_name=${{ inputs.base_image_name }}" `
         -var="source_vm_tag=${{ inputs.base_image_tag_name }}" `
         -var="vm_username=${{ secrets.VM_USERNAME }}" `
         -var="vm_password=${{ secrets.VM_PASSWORD }}" `
