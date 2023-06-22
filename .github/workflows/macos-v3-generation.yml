@@ -123,7 +123,7 @@ jobs:
       run: |
         mkdir -p ${{ runner.temp }}/xcversion-cookie
         cookie='${{ secrets.XCVERSION_AUTH_COOKIE }}'
-        echo "$cookie" | base64 > ${{ runner.temp }}/xcversion-cookie/cookie
+        echo "$cookie" | base64 --encode > ${{ runner.temp }}/xcversion-cookie/cookie
 
     - name: Set video fbuf controller
       run: |
