@@ -71,7 +71,6 @@ jobs:
         }
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
         "VM_NAME=$virtualMachineName" | Out-File -Append -FilePath $env:GITHUB_ENV
-        write-host "${{ secrets.XCVERSION_AUTH_COOKIE }}"
 
     - name: Determine checkout type
       run: |
@@ -125,6 +124,8 @@ jobs:
         mkdir -p ${{ runner.temp }}/xcversion-cookie
         cookie='${{ secrets.XCVERSION_AUTH_COOKIE }}'
         echo "$cookie" | base64 > ${{ runner.temp }}/xcversion-cookie/cookie
+        echo "$cookie"
+        cat ${{ runner.temp }}/xcversion-cookie/cookie
 
     - name: Set video fbuf controller
       run: |
