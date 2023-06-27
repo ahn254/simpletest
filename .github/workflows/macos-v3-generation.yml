@@ -126,7 +126,9 @@ jobs:
         mkdir -p ${{ runner.temp }}/xcversion-cookie
         cookie='${{ secrets.XCVERSION_AUTH_COOKIE }}'
         echo "$cookie" | base64 > ${{ runner.temp }}/xcversion-cookie/cookie
-        cat ${{ runner.temp }}/xcversion-cookie/cookie
+        encoco=$(<${{ runner.temp }}/xcversion-cookie/cookie)
+        echo $encoco
+        echo "XCVERSION_AUTH_COOKIE_BEN=$encoco" >> "$GITHUB_ENV"
 
     - name: Set video fbuf controller
       run: |
@@ -134,6 +136,7 @@ jobs:
 
     - name: Build image
       run: |
+        write-host ${{ env.XCVERSION_AUTH_COOKIE_BEN }}
         $SensitiveData = @(
           'IP address:',
           'Using ssh communicator to connect:'
@@ -148,7 +151,7 @@ jobs:
         -var="github_api_pat=${{ secrets.GH_FEED_TOKEN }}" `
         -var="xcode_install_user=${{ secrets.XCODE_USER }}" `
         -var="xcode_install_password=${{ secrets.XCODE_PASSWORD }}" `
-        -var="xcversion_auth_cookie=${{ env.XCVERSION_AUTH_COOKIE_EN }}" `
+        -var="xcversion_auth_cookie=${{ env.XCVERSION_AUTH_COOKIE_BEN }}" `
         -color=false `
         ${{ inputs.template_path }} `
         | Where-Object {
