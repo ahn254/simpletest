@@ -167,7 +167,7 @@ jobs:
         New-Item -Path "${{ runner.temp }}/artifacts" -ItemType "Directory" -Force
 
         write-host "Copy image output files"
-        Copy-Item "images/image-output/software-report/." "${{ runner.temp }}/artifacts" -Recurse -Force
+        Copy-Item "images/image-output/software-report/" "${{ runner.temp }}/artifacts" -Recurse -Force
 
         write-host "Put VM name to 'VM_Done_Name' file"
         Set-Content -Value "${{ env.VM_NAME }}" -Path "${{ runner.temp }}/artifacts/VM_Done_Name"
