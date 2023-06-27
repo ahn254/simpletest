@@ -124,8 +124,16 @@ jobs:
         mkdir -p ${{ runner.temp }}/xcversion-cookie
         cookie='${{ secrets.XCVERSION_AUTH_COOKIE }}'
         echo "$cookie" | base64 > ${{ runner.temp }}/xcversion-cookie/cookie
-        echo "$cookie"
         cat ${{ runner.temp }}/xcversion-cookie/cookie
+
+    - name: Create xcversion session cookie file
+      run: |
+        $cookie = [System.Text.Encoding]::Unicode.GetBytes(${{ secrets.XCVERSION_AUTH_COOKIE }})
+        $encodedCookie =[Convert]::ToBase64String($cookie)
+        write-host $encodedCookie
+        Write-host "==============$$$7777777$$$===================="
+        $encodedCookie1 = [Convert]::ToBase64String($([System.Text.Encoding]::Unicode.GetBytes(${{ secrets.XCVERSION_AUTH_COOKIE }})))
+        write-host $encodedCookie1
 
     - name: Set video fbuf controller
       run: |
