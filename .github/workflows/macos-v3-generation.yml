@@ -70,7 +70,9 @@ jobs:
           $osName = $(($templatePath.Split("/")[-1]).Split(".")[0])
         }
         $virtualMachineName = "${osName}_${currentDate}_unstable.${{ github.run_id }}.${{ github.run_attempt }}"
+        $encodedCookie = [Convert]::ToBase64String($([System.Text.Encoding]::Unicode.GetBytes('${{ secrets.XCVERSION_AUTH_COOKIE }}')))
         "VM_NAME=$virtualMachineName" | Out-File -Append -FilePath $env:GITHUB_ENV
+        "XCVERSION_AUTH_COOKIE_EN=$encodedCookie" | Out-File -Append -FilePath $env:GITHUB_ENV
 
     - name: Determine checkout type
       run: |
@@ -126,15 +128,6 @@ jobs:
         echo "$cookie" | base64 > ${{ runner.temp }}/xcversion-cookie/cookie
         cat ${{ runner.temp }}/xcversion-cookie/cookie
 
-    - name: Create xcversion session cookie file
-      run: |
-        $cookie = [System.Text.Encoding]::Unicode.GetBytes('${{ secrets.XCVERSION_AUTH_COOKIE }}')
-        $encodedCookie =[Convert]::ToBase64String($cookie)
-        write-host $encodedCookie
-        Write-host "==============$$$7777777$$$===================="
-        $encodedCookie1 = [Convert]::ToBase64String($([System.Text.Encoding]::Unicode.GetBytes('${{ secrets.XCVERSION_AUTH_COOKIE }}')))
-        write-host $encodedCookie1
-
     - name: Set video fbuf controller
       run: |
         anka modify ${{ inputs.base_image_name }} display -c fbuf
@@ -155,7 +148,7 @@ jobs:
         -var="github_api_pat=${{ secrets.GH_FEED_TOKEN }}" `
         -var="xcode_install_user=${{ secrets.XCODE_USER }}" `
         -var="xcode_install_password=${{ secrets.XCODE_PASSWORD }}" `
-        -var="xcversion_auth_cookie=${{ env.XCVERSION_COOKIE_PATH }}" `
+        -var="xcversion_auth_cookie=${{ env.XCVERSION_AUTH_COOKIE_EN }}" `
         -color=false `
         ${{ inputs.template_path }} `
         | Where-Object {
@@ -168,7 +161,6 @@ jobs:
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
-        XCVERSION_COOKIE_PATH: ${{ runner.temp }}/xcversion-cookie/cookie
 
     - name: Prepare artifact
       shell: bash
