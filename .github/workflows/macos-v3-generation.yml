@@ -162,16 +162,15 @@ jobs:
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
 
     - name: Prepare artifact
-      shell: bash
       run: |
-        echo "Preparing artifact directory"
-        mkdir -p ${{ runner.temp }}/artifacts
+        write-host "Preparing artifact directory"
+        New-Item -Path "${{ runner.temp }}/artifacts" -ItemType "Directory" -Force
 
-        echo "Copy image output files"
-        cp -R "images/image-output/software-report/." "${{ runner.temp }}/artifacts"
+        write-host "Copy image output files"
+        Copy-Item "images/image-output/software-report/." "${{ runner.temp }}/artifacts" -Recurse -Force
 
-        echo "Put VM name to 'VM_Done_Name' file"
-        echo "${{ env.VM_NAME }}" > "${{ runner.temp }}/artifacts/VM_Done_Name"
+        write-host "Put VM name to 'VM_Done_Name' file"
+        Set-Content -Value "${{ env.VM_NAME }}" -Path "${{ runner.temp }}/artifacts/VM_Done_Name"
 
     - name: Print markdown software report
       run: |
@@ -206,11 +205,11 @@ jobs:
         $vm_spec = $(anka --machine-readable show ${{ env.VM_NAME }}
         $VMram = ($vm_spec | convertfrom-json).body.ram
         $VMcpu = ($vm_spec | convertfrom-json).body.cpu_cores
-        if (($VMcpu -eq 9)  -and ($VMram -eq "12G")) then
+        if (($VMcpu -eq 9)  -and ($VMram -eq "12G")) {
           write-host "VM was successfully resized"
-        else
+        } else {
           write-host "VM was not resized, actual NumCpu = $VMcpu; actual MemoryGb = $VMram"
-        fi
+        }
 
     - name: Anka push the image to the registry
       if: ${{ success() && inputs.push_image == true}}
