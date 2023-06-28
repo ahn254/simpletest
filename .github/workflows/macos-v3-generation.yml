@@ -162,15 +162,16 @@ jobs:
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
 
     - name: Prepare artifact
+      shell: bash
       run: |
-        write-host "Preparing artifact directory"
-        New-Item -Path "${{ runner.temp }}/artifacts" -ItemType "Directory" -Force
+        echo "Preparing artifact directory"
+        mkdir -p /Users/maccloud/Agents/image-generation-t/_work/_temp/artifacts
 
-        write-host "Copy image output files"
-        Copy-Item "images/image-output/software-report/" "${{ runner.temp }}/artifacts" -Recurse -Force
+        echo "Copy image output files"
+        cp -R "images/image-output/software-report/." "/Users/maccloud/Agents/image-generation-t/_work/_temp/artifacts"
 
-        write-host "Put VM name to 'VM_Done_Name' file"
-        Set-Content -Value "${{ env.VM_NAME }}" -Path "${{ runner.temp }}/artifacts/VM_Done_Name"
+        echo "Put VM name to 'VM_Done_Name' file"
+        echo "macOS-13.arm64_20230627_unstable.5389794910.1" > "/Users/maccloud/Agents/image-generation-t/_work/_temp/artifacts/VM_Done_Name"
 
     - name: Print markdown software report
       run: |
