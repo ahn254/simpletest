@@ -200,10 +200,10 @@ jobs:
 
     - name: Set minimal VM size
       run: |
-        write-host "Set $(Build.BuildNumber) VM size: NumCpu=9; MemoryGb=12GB"
+        write-host "Set ${{ env.VM_NAME }} VM size: NumCpu=9; MemoryGb=12GB"
         anka modify ${{ env.VM_NAME }} ram 12G
         anka modify ${{ env.VM_NAME }} cpu 9
-        $vm_spec = $(anka --machine-readable show ${{ env.VM_NAME }}
+        $vm_spec = $(anka --machine-readable show ${{ env.VM_NAME }})
         $VMram = ($vm_spec | convertfrom-json).body.ram
         $VMcpu = ($vm_spec | convertfrom-json).body.cpu_cores
         if (($VMcpu -eq 9)  -and ($VMram -eq "12G")) {
