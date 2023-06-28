@@ -216,7 +216,7 @@ jobs:
       if: ${{ success() && inputs.push_image == true}}
       run: |
         $AnkaCaCrtPath = "$HOME/.config/anka/certs/anka-ca-crt.pem"
-        $anka_build_output = $(anka registry --cacert $AnkaCaCrtPath --registry-path ${{ secrets.registry_url }} push --force --tag ${{ env.VM_NAME }} ${{ env.VM_NAME }})
+        $anka_build_output = $(anka registry --cacert $AnkaCaCrtPath --registry-path ${{ secrets.registry_url }} push ${{ env.VM_NAME }})
         write-host $anka_build_output
 
     - name: Anka remove the image from the local storage
