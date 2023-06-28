@@ -215,7 +215,7 @@ jobs:
     - name: Anka push the image to the registry
       if: ${{ success() && inputs.push_image == true}}
       run: |
-        AnkaCaCrtPath="$HOME/.config/anka/certs/anka-ca-crt.pem"
+        $AnkaCaCrtPath="$HOME/.config/anka/certs/anka-ca-crt.pem"
         $anka_build_output=$(anka registry --cacert $AnkaCaCrtPath -a ${{ secrets.registry_url }} push -t ${{ env.VM_NAME }} ${{ env.VM_NAME }})
         write-host $anka_build_output
 
