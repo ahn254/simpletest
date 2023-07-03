@@ -1,0 +1,18 @@
+run-name: test 1
+on:
+  workflow_call:
+    inputs:
+      IMAGE_NAME:
+        type: string
+        description: 'image Name'
+        required: false
+
+jobs:
+  trigger-test:
+    runs-on: ubuntu-latest
+    name: trigger test
+    steps:
+      - name: test 1
+        shell: pwsh  
+        run: |
+          write-host "This is test 1"
