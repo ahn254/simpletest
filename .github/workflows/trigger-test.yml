@@ -10,19 +10,27 @@ jobs:
   trigger-test:
     runs-on: ubuntu-latest
     name: trigger test
-    permissions: 
-      actions: write
     steps:
-      - env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+      - name: trigger 1  
         shell: pwsh  
         run: |
-          $params = @{
-              Uri     = "https://dev.azure.com/buildcanary/_apis/resources/Containers/{0}?itemPath=drop%2Ftest-results.xml" -f $buildArtifactId
-              Headers = @{Authorization = ("Basic {0}" -f $base64AuthInfo) }
-              OutFile = "test-results.xml"
+          function CreateGitHubRequestHeaders( [string]$token){
+              $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("'':${{ secrets.TEST_PAT }}"))
+              $headers = @{Authorization="Basic $base64AuthInfo"}
+              return $headers
           }
-
-          Invoke-WebRequest @params
+          $url = "actions/workflows/$WorkflowFileName"
+          $response =  $this.InvokeRestMethod($url, 'GET', $null, $null)
+          
+          $imageVersion = 
+          $url = 'https://api.github.com/repos/AleAiu/simpletest/actions/workflows/WORKFLOW_ID/dispatches'
+          $body = @{
+                  image_version = "$imageVersion"        
+              } | ConvertTo-Json
+              
+              Invoke-RestMethod -Method Post `
+              -Uri $url `
+              -Headers $headers `
+              -Body $body # for POST and PUT
 
 
