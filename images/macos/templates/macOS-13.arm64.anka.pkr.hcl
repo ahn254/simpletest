@@ -49,6 +49,16 @@ variable "xcversion_auth_cookie" {
   default = ""
 }
 
+variable "xcodeStoragePrefix" {
+  type = string
+  sensitive = true
+}
+
+variable "xcodeDownloadSas" {
+  type = string
+  sensitive = true
+}
+
 variable "vcpu_count" {
   type = string
   default = "6"
