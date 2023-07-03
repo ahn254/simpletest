@@ -14,23 +14,21 @@ jobs:
       - name: trigger 1  
         shell: pwsh  
         run: |
-          function CreateGitHubRequestHeaders( [string]$token){
-              $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("'':${{ secrets.TEST_PAT }}"))
-              $headers = @{Authorization="Basic $base64AuthInfo"}
-              return $headers
-          }
-          $url = "actions/workflows/$WorkflowFileName"
-          $response =  $this.InvokeRestMethod($url, 'GET', $null, $null)
-          
-          $imageVersion = 
-          $url = 'https://api.github.com/repos/AleAiu/simpletest/actions/workflows/WORKFLOW_ID/dispatches'
-          $body = @{
-                  image_version = "$imageVersion"        
-              } | ConvertTo-Json
-              
-              Invoke-RestMethod -Method Post `
-              -Uri $url `
-              -Headers $headers `
-              -Body $body # for POST and PUT
+          $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("'':${{ TEST_PAT }}"))
+          $headers = @{Authorization="Basic $base64AuthInfo"}
 
+          $WorkflowId = "triggered.yml"
+          $imageName= "AzP.20230630.win22.1"
+          $url = "https://api.github.com/repos/AleAiu/simpletest/actions/workflows/${WorkflowId}/dispatches"
+                    $body = @{
+                      ref = "main"
+                      inputs = @{
+                          IMAGE_NAME = "$imageName"
+                           }
+                        } | ConvertTo-Json
+
+          Invoke-RestMethod -Method Post `
+          -Uri $url `
+          -Headers $headers `
+          -Body $body
 
