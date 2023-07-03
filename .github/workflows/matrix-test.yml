@@ -24,8 +24,8 @@ jobs:
     name: run all tests
     runs-on: ubuntu-latest
     steps:
-      - name: ${{ matrix.test_name }}
-        uses: ${{ "./.github/workflows/triggered1.yml" }}
+      - name: test1
+        uses: ./.github/workflows/triggered1.yml
         with:
           IMAGE_NAME: "AzP.20230630.win22.1"
             
