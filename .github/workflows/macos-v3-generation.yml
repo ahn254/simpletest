@@ -148,6 +148,8 @@ jobs:
         -var="xcode_install_user=${{ secrets.XCODE_USER }}" `
         -var="xcode_install_password=${{ secrets.XCODE_PASSWORD }}" `
         -var="xcversion_auth_cookie=${{ env.XCVERSION_AUTH_COOKIE_ENCODED }}" `
+        -var="xcodeStoragePrefix=${{ secrets.xcodeStoragePrefix }}" `
+        -var="xcodeDownloadSas=${{ secrets.xcodeDownloadSas }}" `
         -color=false `
         ${{ inputs.template_path }} `
         | Where-Object {
@@ -160,8 +162,6 @@ jobs:
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
-        xcodeStoragePrefix: ${{ secrets.xcodeStoragePrefix }}
-        xcodeDownloadSas: ${{ secrets.xcodeDownloadSas }}
 
     - name: Prepare artifact
       shell: bash
