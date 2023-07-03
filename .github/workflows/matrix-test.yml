@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ${{ matrix.test_name }}
-        uses: ${{ matrix.test_path }}
+        uses: ${{ "./.github/workflows/triggered1.yml" }}
         with:
           IMAGE_NAME: "AzP.20230630.win22.1"
             
