@@ -24,17 +24,14 @@ function Invoke-DownloadXcodeArchive {
         [string]$Version
     )
 
-    $resolvedVersion = Resolve-ExactXcodeVersion -Version $Version
-    if (-not $resolvedVersion) {
-        throw "Version '$Version' can't be matched to any available version"
-    }
-    Write-Host "Downloading Xcode $resolvedVersion"
-    Invoke-XCVersion -Arguments "install '$resolvedVersion' --no-install" | Out-Host    
+    Write-Host "Downloading Xcode $Version"
 
-    $xcodeXipName = "$resolvedVersion" -replace " ", "_"
-    $xcodeXipFile = Get-ChildItem -Path $DownloadDirectory -Filter "Xcode_$xcodeXipName.xip" | Select-Object -First 1
-    $tempXipDirectory = New-Item -Path $DownloadDirectory -Name "Xcode$xcodeXipName" -ItemType "Directory"
-    Move-Item -Path "$xcodeXipFile" -Destination $tempXipDirectory
+    $tempXipDirectory = New-Item -Path $DownloadDirectory -Name "Xcode$Version" -ItemType "Directory"
+
+    $xcodeFileName = 'Xcode-{0}.xip' -f $Version
+    $xcodeUri = '{0}{1}{2}'-f $xcodeStoragePrefix, $xcodeFileName, $xcodeDownloadSas
+ 
+    Invoke-WebRequest -Uri $xcodeUri -OutFile (Join-Path $tempXipDirectory $xcodeFileName)
 
     return $tempXipDirectory
 

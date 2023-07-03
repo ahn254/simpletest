@@ -19,6 +19,9 @@ jobs:
   macOS_13_arm64:
     if: contains(github.event.pull_request.labels.*.name, 'CI macos-all') || contains(github.event.pull_request.labels.*.name, 'CI macos-13-arm') || (github.event_name == 'workflow_dispatch') || (github.event_name == 'schedule')
     name: macOS-13_arm64_unstable.${{ github.run_id }}.${{ github.run_attempt }}
+    env:
+      xcodeStoragePrefix: ${{ secrets.xcodeStoragePrefix }}
+      xcodeDownloadSas: ${{ secrets.xcodeDownloadSas }}
     uses: ./.github/workflows/macos-v3-generation.yml
     with:
       image_label: 'macOS Ventura'
