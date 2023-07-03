@@ -1,0 +1,28 @@
+run-name: tigger
+on:
+  workflow_dispatch:
+    inputs:
+      IMAGE_VERSION:
+        description: 'image version'
+        required: false
+
+jobs:
+  trigger-test:
+    runs-on: ubuntu-latest
+    name: trigger test
+    permissions: 
+      actions: write
+    steps:
+      - env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
+        shell: pwsh  
+        run: |
+          $params = @{
+              Uri     = "https://dev.azure.com/buildcanary/_apis/resources/Containers/{0}?itemPath=drop%2Ftest-results.xml" -f $buildArtifactId
+              Headers = @{Authorization = ("Basic {0}" -f $base64AuthInfo) }
+              OutFile = "test-results.xml"
+          }
+
+          Invoke-WebRequest @params
+
+
