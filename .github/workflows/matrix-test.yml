@@ -13,13 +13,13 @@ jobs:
       matrix:
         include:
           - test_name: test 1
-            test_path: .github/workflows/triggered1.yml
+            test_path: ./.github/workflows/triggered1.yml
           
           - test_name: test 2
-            test_path: .github/workflows/triggered2.yml
+            test_path: ./.github/workflows/triggered2.yml
           
           - test_name: test 3
-            test_path: .github/workflows/triggered3.yml
+            test_path: ./.github/workflows/triggered3.yml
             
     name: run all tests
     runs-on: ubuntu-latest
