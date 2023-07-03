@@ -2,8 +2,8 @@ run-name: triggered one
 on:
   workflow_dispatch:
     inputs:
-      IMAGE_VERSION:
-        description: 'image version'
+      IMAGE_NAME:
+        description: 'image Name'
         required: false
 
 jobs:
@@ -14,4 +14,4 @@ jobs:
       - name: trigger 1  
         shell: pwsh  
         run: |
-          write-host "it works"
+          write-host "it works - ${{ inputs.IMAGE_NAME }}"
