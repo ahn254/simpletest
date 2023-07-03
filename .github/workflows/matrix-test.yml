@@ -24,8 +24,10 @@ jobs:
     name: run all tests
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v3.5.3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          repository: AleAiu/simpletest
      
       - name: test1
         uses: ./.github/workflows/triggered1.yml
