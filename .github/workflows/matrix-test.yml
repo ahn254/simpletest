@@ -1,0 +1,30 @@
+run-name: matrix-run
+on:
+  workflow_dispatch:
+    inputs:
+      IMAGE_VERSION:
+        description: 'image version'
+        required: false
+
+jobs:
+  matrix-tes:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - test_name: test 1
+            test_path: ./.github/workflows/triggered1
+          
+          - test_name: test 2
+            test_path: ./.github/workflows/triggered2
+          
+          - test_name: test 3
+            test_path: ./.github/workflows/triggered3
+            
+    name: run all tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: ${{ matrix.test_name }}
+        uses: ${{ matrix.test_path }}
+      
+            
