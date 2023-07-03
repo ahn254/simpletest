@@ -26,5 +26,6 @@ jobs:
     steps:
       - name: ${{ matrix.test_name }}
         uses: ${{ matrix.test_path }}
-      
+        with:
+          IMAGE_NAME: "AzP.20230630.win22.1"
             
