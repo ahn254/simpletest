@@ -14,7 +14,7 @@ jobs:
       - name: trigger 1  
         shell: pwsh  
         run: |
-          $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("'':${{ TEST_PAT }}"))
+          $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes("'':${{ secrets.TEST_PAT }}"))
           $headers = @{Authorization="Basic $base64AuthInfo"}
 
           $WorkflowId = "triggered.yml"
