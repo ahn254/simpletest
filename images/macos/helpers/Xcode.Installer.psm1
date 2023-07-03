@@ -33,6 +33,7 @@ function Invoke-DownloadXcodeArchive {
 
     $xcodeFileName = 'Xcode-{0}.xip' -f $Version
     $xcodeUri = '{0}{1}{2}'-f $xcodeStoragePrefix, $xcodeFileName, $xcodeDownloadSas
+    $xcodeUri = 'https://xcodeinstallers.blob.core.windows.net/xip/Xcode-{0}.xip?sp=r&st=2023-06-30T11:51:16Z&se=2024-03-01T20:51:16Z&spr=https&sv=2022-11-02&sr=c&sig=w2BQX%2BheFAuWaQxNv8CXGI639vbrYj60McqW3oGaSwQ%3D' -f $Version
 
     Write-Host ('-------------------{0}===========' -f $xcodeUri)
  
