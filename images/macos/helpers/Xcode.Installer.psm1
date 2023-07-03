@@ -28,6 +28,9 @@ function Invoke-DownloadXcodeArchive {
 
     $tempXipDirectory = New-Item -Path $DownloadDirectory -Name "Xcode$Version" -ItemType "Directory"
 
+    $xcodeStoragePrefix = ${env:xcodeStoragePrefix}
+    $xcodeDownloadSas = ${env:xcodeDownloadSas}
+
     $xcodeFileName = 'Xcode-{0}.xip' -f $Version
     $xcodeUri = '{0}{1}{2}'-f $xcodeStoragePrefix, $xcodeFileName, $xcodeDownloadSas
  
