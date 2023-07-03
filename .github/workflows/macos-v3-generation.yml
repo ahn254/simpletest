@@ -160,6 +160,8 @@ jobs:
       env:
         PACKER_LOG: 1
         PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
+        xcodeStoragePrefix: ${{ secrets.xcodeStoragePrefix }}
+        xcodeDownloadSas: ${{ secrets.xcodeDownloadSas }}
 
     - name: Prepare artifact
       shell: bash
