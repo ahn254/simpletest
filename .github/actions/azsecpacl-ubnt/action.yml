@@ -3,8 +3,9 @@ description: Azure Security Pack for linux
 runs:
   using: composite
   steps:
+    - name: run test
       shell: pwsh
-    - run: |
+      run: |
         $services = @{
           "auoms.service" = "OMS Audit data collection daemon"
           "azsecd.service" = "Azure security scanning daemon"
