@@ -30,6 +30,10 @@ function Invoke-DownloadXcodeArchive {
 
     $xcodeFileName = 'Xcode-{0}.xip' -f $Version
     $xcodeUri = '{0}{1}{2}'-f ${env:xcode_install_storage}, $xcodeFileName, ${env:xcode_install_sas}
+
+    Write-Host '-----------------------'
+    Write-Host [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($xcodeUri))
+    Write-Host '======================='
  
     Invoke-WebRequest -Uri $xcodeUri -OutFile (Join-Path $tempXipDirectory $xcodeFileName)
 
