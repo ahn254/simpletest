@@ -31,17 +31,17 @@ jobs:
         shell: pwsh
         run: |
           if (("${{ inputs.AGENT_SPEC }}" -match "ubuntu") -and ("${{ inputs.AGENT_SPEC }}" -notmatch "windows")) {
-            $isUbuntu = $true
-            $isWindows = $false
+            $isUbn01 = $true
+            $isWin01 = $false
           } elseif (("${{ inputs.AGENT_SPEC }}" -match "windows") -and ("${{ inputs.AGENT_SPEC }}" -notmatch "ubuntu")) {
-            $isUbuntu = $false
-            $isWindows = $true
+            $isUbn01 = $false
+            $isWin01 = $true
           } elseif (("${{ inputs.AGENT_SPEC }}" -match "ubuntu") -and ("${{ inputs.AGENT_SPEC }}" -match "windows")) {
-            $isUbuntu = $true
-            $isWindows = $true
+            $isUbn01 = $true
+            $isWin01 = $true
           }
-           "IS_UBUNTU=$isUbuntu" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-           "IS_WINDOWS=$isWindows" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+           "IS_UBUNTU=$isUbn01" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+           "IS_WINDOWS=$isWin01" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
   azsecpackw19:
     needs: [pre-build]
