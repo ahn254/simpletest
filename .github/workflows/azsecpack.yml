@@ -14,6 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
+      isubuntu: ${{ steps.build_condition.outputs.IS_UBUNTU }}
+      iswindows: ${{ steps.build_condition.outputs.IS_WINDOWS }}
     steps:
       - name: Build matrix
         id: build_matrix_step
@@ -25,6 +27,7 @@ jobs:
           "matrix=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
       - name: Build conditions
+        id: build_condition
         shell: pwsh
         run: |
           if (("${{ inputs.AGENT_SPEC }}" -match "ubuntu") -and ("${{ inputs.AGENT_SPEC }}" -notmatch "windows")) {
@@ -37,12 +40,12 @@ jobs:
             $isUbuntu = $true
             $isWindows = $true
           }
-           "IS_UBUNTU=$isUbuntu" | Out-File -Append $env:GITHUB_ENV
-           "IS_WINDOWS=$isWindows" | Out-File -Append $env:GITHUB_ENV
+           "IS_UBUNTU=$isUbuntu" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+           "IS_WINDOWS=$isWindows" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
   azsecpackw19:
     needs: [pre-build]
-    if: ${{ env.IS_WINDOWS == "true" }}
+    if: ${{ needs.pre-build.outputs.isubuntu == "true" }}
     strategy:
       matrix:
         os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
@@ -70,7 +73,7 @@ jobs:
 
   azsecpacku20:
     needs: [pre-build]
-    if: ${{ env.ISUBUNTU == "true" }}
+    if: ${{ needs.pre-build.outputs.iswindows == "true" }}
     strategy:
       matrix:
         os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
