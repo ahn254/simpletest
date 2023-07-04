@@ -12,6 +12,6 @@ jobs:
         uses: actions/checkout@v3
         
       - name: test dynamic
-        uses: actions/dynamic-inputs.yml@v1
+        uses: ./.github/actions/dynamic-test
         with:
           action-name: "./.github/workflows/triggered1.yml"
