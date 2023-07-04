@@ -49,12 +49,12 @@ variable "xcversion_auth_cookie" {
   default = ""
 }
 
-variable "xcodeStoragePrefix" {
+variable "xcode_install_storage" {
   type = string
   sensitive = true
 }
 
-variable "xcodeDownloadSas" {
+variable "xcode_install_sas" {
   type = string
   sensitive = true
 }
