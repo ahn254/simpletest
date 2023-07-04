@@ -1,0 +1,54 @@
+run-name: ${{ inputs.OS_PLATFORM }}-${{ inputs.IMAGE_VERSION }} azseckpac test
+on:
+  workflow_dispatch:
+    inputs:
+      IMAGE_VERSION:
+        description: 'image version'
+        required: false
+      OS_PLATFORM:
+        description: 'OS platform'
+        required: false  
+        
+jobs: 
+  azsecpack:
+    runs-on: windows-2019
+    if: ${{ inputs.OS_PLATFORM == "win19" }}
+    name: run test on ${{ inputs.OS_PLATFORM }}
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v3
+      - name: run test
+        uses: ./actions/azsecpack-win  
+    
+jobs: 
+  azsecpack:
+    runs-on: windows-2022
+    if: ${{ inputs.OS_PLATFORM == "win20" }}
+    name: run test on ${{ inputs.OS_PLATFORM }}
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v3
+      - name: run test
+        uses: ./actions/azsecpack-win
+
+jobs: 
+  azsecpack:
+    runs-on: ubuntu-20.04
+    if: ${{ inputs.OS_PLATFORM == "ubuntu20" }}
+    name: run test on ${{ inputs.OS_PLATFORM }}
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v3
+      - name: run test
+        uses: ./actions/azsecpack-ubnt
+
+jobs: 
+  azsecpack:
+    runs-on: ubuntu-22.04
+    if: ${{ inputs.OS_PLATFORM == "ubuntu22" }}
+    name: run test on ${{ inputs.OS_PLATFORM }}
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v3
+      - name: run test
+        uses: ./actions/azsecpack-ubnt
