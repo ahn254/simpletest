@@ -5,19 +5,13 @@ on:
   
 jobs:
   check_vars:
-    name: Ceck vars
-    runs-on: azure-builds
+    name: test1
+    runs-on: ubuntu-latest
     steps:
       - name: git checkout
         uses: actions/checkout@v3
         
-      - name: cat variables output
-        shell: bash
-        run: |
-          echo "echo ls"
-          ls
-          echo "list variables"
-          echo $GITHUB_WORKSPACE
-          echo $RUNNER_WORKSPACE
-          ls $RUNNER_WORKSPACE
-          ls $GITHUB_WORKSPACE          
+      - name: test dynamic
+        uses: actions/dynamic-inputs.yml@v1
+        with:
+          action-name: "./.github/workflows/triggered1.yml"

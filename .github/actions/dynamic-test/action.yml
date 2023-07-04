@@ -1,0 +1,12 @@
+name: dynamic
+description: Call another action passed as an input
+inputs:
+  action-name:
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: echo 'dynamic'
+      shell: bash
+
+    - uses: ${{ inputs.action-name }}
