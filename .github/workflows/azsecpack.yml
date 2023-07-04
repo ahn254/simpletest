@@ -20,6 +20,9 @@ jobs:
         shell: pwsh
         run: |
           $matrixJson = $("${{ inputs.AGENT_SPEC }}").Split(',').Trim() | ConvertTo-Json -AsArray
+          write-host $matrixJson
+          $matrixJson12 = $("${{ inputs.AGENT_SPEC }}").Split(',').Trim() | ConvertTo-Json
+          write-host $matrixJson12
           "runner=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
   azsecpackw19:
