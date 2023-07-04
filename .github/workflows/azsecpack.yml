@@ -45,7 +45,7 @@ jobs:
       
   azsecpackw19:
     needs: [pre-build]
-    if: ${{ needs.pre-build.outputs.isubuntu == "true" }}
+    if: ${{ needs.pre-build.outputs.isubuntu == 'true' }}
     strategy:
       matrix:
         os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
@@ -73,7 +73,7 @@ jobs:
 
   azsecpacku20:
     needs: [pre-build]
-    if: ${{ needs.pre-build.outputs.iswindows == "true" }}
+    if: ${{ needs.pre-build.outputs.iswindows == 'true' }}
     strategy:
       matrix:
         os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
