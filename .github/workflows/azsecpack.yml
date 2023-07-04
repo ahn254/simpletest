@@ -17,6 +17,7 @@ jobs:
     steps:
       - name: Build matrix
         id: build_matrix
+        shell: pwsh
         run: |
           $matrixJson = $( ${{ inputs.AGENT_SPEC }}).Split(',').Trim() | ConvertTo-Json -AsArray
           "runner=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
