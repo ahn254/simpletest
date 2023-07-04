@@ -10,7 +10,7 @@ on:
         required: false  
         
 jobs: 
-  build-matrix:
+  pre-build:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
@@ -24,13 +24,29 @@ jobs:
 
           "matrix=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
+      - name: Build conditions
+        shell: pwsh
+        run: |
+          if (("${{ inputs.AGENT_SPEC }}" -match "ubuntu") -and ("${{ inputs.AGENT_SPEC }}" -notmatch "windows")) {
+            $isUbuntu = $true
+            $isWindows = $false
+          } elseif (("${{ inputs.AGENT_SPEC }}" -match "windows") -and ("${{ inputs.AGENT_SPEC }}" -notmatch "ubuntu")) {
+            $isUbuntu = $false
+            $isWindows = $true
+          } elseif (("${{ inputs.AGENT_SPEC }}" -match "ubuntu") -and ("${{ inputs.AGENT_SPEC }}" -match "windows")) {
+            $isUbuntu = $true
+            $isWindows = $true
+          }
+           "IS_UBUNTU=$isUbuntu" | Out-File -Append $env:GITHUB_ENV
+           "IS_WINDOWS=$isWindows" | Out-File -Append $env:GITHUB_ENV
+      
   azsecpackw19:
-    needs: [build-matrix]
+    needs: [pre-build]
+    if: ${{ env.IS_WINDOWS == "true" }}
     strategy:
       matrix:
-        os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
-    runs-on: ${{ matrix.os }}
-    if: contains(${{ inputs.AGENT_SPEC }}, 'windows-2019')
+        os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+    runs-on: ${{ matrix.os }} 
     name: run test on ${{ inputs.AGENT_SPEC }}
     steps:
       - name: repo checkout
@@ -38,27 +54,27 @@ jobs:
       - name: run test
         uses: ./.github/actions/azsecpack-win  
     
-  azsecpackw22:
-    needs: [build-matrix]
-    strategy:
-      matrix:
-        os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
-    runs-on: ${{ matrix.os }}
-    if: contains(${{ inputs.AGENT_SPEC }}, 'windows-2022')
-    name: run test on ${{ inputs.AGENT_SPEC }}
-    steps:
-      - name: repo checkout
-        uses: actions/checkout@v3
-      - name: run test
-        uses: ./.github/actions/azsecpack-win
+  #azsecpackw22:
+  #  needs: [pre-build]
+  #  strategy:
+  #    matrix:
+  #      os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+  #  runs-on: ${{ matrix.os }}
+  #  if: contains(${{ inputs.AGENT_SPEC }}, 'windows-2022')
+  #  name: run test on ${{ inputs.AGENT_SPEC }}
+  #  steps:
+  #    - name: repo checkout
+  #      uses: actions/checkout@v3
+  #    - name: run test
+  #      uses: ./.github/actions/azsecpack-win
 
   azsecpacku20:
-    needs: [build-matrix]
+    needs: [pre-build]
+    if: ${{ env.ISUBUNTU == "true" }}
     strategy:
       matrix:
         os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
-    if: contains(${{ inputs.AGENT_SPEC }}, 'ubuntu-20.04')
     name: run test on ${{ inputs.AGENT_SPEC }}
     steps:
       - name: repo checkout
@@ -66,16 +82,16 @@ jobs:
       - name: run test
         uses: ./.github/actions/azsecpacl-ubnt
 
-  azsecpacku22:
-    needs: [build-matrix]
-    strategy:
-      matrix:
-        os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
-    runs-on: ${{ matrix.os }}
-    if: contains(${{ inputs.AGENT_SPEC }}, 'ubuntu-22.04')
-    name: run test on ${{ inputs.AGENT_SPEC }}
-    steps:
-      - name: repo checkout
-        uses: actions/checkout@v3
-      - name: run test
-        uses: ./.github/actions/azsecpacl-ubnt
+ # azsecpacku22:
+ #   needs: [pre-build]
+ #   strategy:
+ #     matrix:
+ #       os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+ #   runs-on: ${{ matrix.os }}
+ #   if: contains(${{ inputs.AGENT_SPEC }}, 'ubuntu-22.04')
+ #   name: run test on ${{ inputs.AGENT_SPEC }}
+ #   steps:
+ #     - name: repo checkout
+ #       uses: actions/checkout@v3
+ #     - name: run test
+ #       uses: ./.github/actions/azsecpacl-ubnt
