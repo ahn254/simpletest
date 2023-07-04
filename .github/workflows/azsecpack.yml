@@ -61,7 +61,7 @@ jobs:
   #  needs: [pre-build]
   #  strategy:
   #    matrix:
-  #      os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+  #      os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
   #  runs-on: ${{ matrix.os }}
   #  if: contains(${{ inputs.AGENT_SPEC }}, 'windows-2022')
   #  name: run test on ${{ inputs.AGENT_SPEC }}
@@ -76,7 +76,7 @@ jobs:
     if: ${{ needs.pre-build.outputs.iswindows == 'true' }}
     strategy:
       matrix:
-        os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+        os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
     name: run test on ${{ inputs.AGENT_SPEC }}
     steps:
@@ -89,7 +89,7 @@ jobs:
  #   needs: [pre-build]
  #   strategy:
  #     matrix:
- #       os: ${{ fromJson(needs.build-matrix.outputs.matrix) }}
+ #       os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
  #   runs-on: ${{ matrix.os }}
  #   if: contains(${{ inputs.AGENT_SPEC }}, 'ubuntu-22.04')
  #   name: run test on ${{ inputs.AGENT_SPEC }}
