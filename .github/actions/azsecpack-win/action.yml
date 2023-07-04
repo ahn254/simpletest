@@ -1,0 +1,14 @@
+name: Windows Azure Pack
+description: Windows Azure Pack
+runs:
+  using: composite
+  steps:
+      shell: pwsh
+    - run: |
+        $isInstalled = Get-CimInstance -ClassName Win32_Product | Where-Object Name -like "Windows Azure Pack *"
+        if ($isInstalled) {
+            Write-Host "Windows Azure Pack is installed:"
+            $isInstalled | Format-Table -AutoSize
+            Write-Host "Please consult with compute-sre[#c2c-actions-compute-sre] team in Slack"
+            throw 1
+        }
