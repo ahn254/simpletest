@@ -10,7 +10,7 @@ on:
         required: false  
         
 jobs: 
-  azsecpack:
+  azsecpackw19:
     runs-on: windows-2019
     if: ${{ inputs.OS_PLATFORM == "win19" }}
     name: run test on ${{ inputs.OS_PLATFORM }}
@@ -20,8 +20,7 @@ jobs:
       - name: run test
         uses: ./actions/azsecpack-win  
     
-jobs: 
-  azsecpack:
+  azsecpackw22:
     runs-on: windows-2022
     if: ${{ inputs.OS_PLATFORM == "win20" }}
     name: run test on ${{ inputs.OS_PLATFORM }}
@@ -31,8 +30,7 @@ jobs:
       - name: run test
         uses: ./actions/azsecpack-win
 
-jobs: 
-  azsecpack:
+  azsecpacku20:
     runs-on: ubuntu-20.04
     if: ${{ inputs.OS_PLATFORM == "ubuntu20" }}
     name: run test on ${{ inputs.OS_PLATFORM }}
@@ -42,8 +40,7 @@ jobs:
       - name: run test
         uses: ./actions/azsecpack-ubnt
 
-jobs: 
-  azsecpack:
+  azsecpacku22:
     runs-on: ubuntu-22.04
     if: ${{ inputs.OS_PLATFORM == "ubuntu22" }}
     name: run test on ${{ inputs.OS_PLATFORM }}
