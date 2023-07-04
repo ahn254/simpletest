@@ -1,4 +1,4 @@
-run-name: ${{ inputs.OS_PLATFORM }}-${{ inputs.IMAGE_VERSION }} azseckpac test
+run-name: ${{ inputs.AGENT_SPEC }}-${{ inputs.IMAGE_VERSION }} azseckpac test
 on:
   workflow_dispatch:
     inputs:
