@@ -148,8 +148,8 @@ jobs:
         -var="xcode_install_user=${{ secrets.XCODE_USER }}" `
         -var="xcode_install_password=${{ secrets.XCODE_PASSWORD }}" `
         -var="xcversion_auth_cookie=${{ env.XCVERSION_AUTH_COOKIE_ENCODED }}" `
-        -var="xcode_install_storage=${{ env.XCODE_INSTALL_STORAGE }}" `
-        -var="xcode_install_sas=${{ env.XCODE_INSTALL_SAS }}" `
+        -var="xcode_install_storage=${{ vars.XCODE_INSTALL_STORAGE }}" `
+        -var="xcode_install_sas=${{ vars.XCODE_INSTALL_SAS }}" `
         -color=false `
         ${{ inputs.template_path }} `
         | Where-Object {
