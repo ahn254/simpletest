@@ -3,8 +3,9 @@ description: Windows Azure Pack
 runs:
   using: composite
   steps:
+    - name: run test
       shell: pwsh
-    - run: |
+      run: |
         $isInstalled = Get-CimInstance -ClassName Win32_Product | Where-Object Name -like "Windows Azure Pack *"
         if ($isInstalled) {
             Write-Host "Windows Azure Pack is installed:"
