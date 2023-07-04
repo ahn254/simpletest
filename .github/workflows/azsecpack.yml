@@ -13,16 +13,16 @@ jobs:
   build-matrix:
     runs-on: ubuntu-latest
     outputs:
-      runner: ${{ steps.build_matrix.outputs.runner }}
+      matrix: ${{ steps.build_matrix_step.outputs.matrix }}
     steps:
       - name: Build matrix
-        id: build_matrix
+        id: build_matrix_step
         shell: pwsh
         run: |
           $matrixJson = $("${{ inputs.AGENT_SPEC }}").Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           write-host $matrixJson
 
-          "runner=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          "matrix=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
   azsecpackw19:
     needs: [build-matrix]
