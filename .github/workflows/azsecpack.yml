@@ -70,27 +70,13 @@ jobs:
       matrix:
         os: ${{ fromJson(needs.pre-build.outputs.matrix_win) }}
     runs-on: ${{ matrix.os }} 
-    name: run test on ${{ inputs.AGENT_SPEC }}
+    name: run test on ${{ matrix.os }}
     steps:
       - name: repo checkout
         uses: actions/checkout@v3
       - name: run test
         uses: ./.github/actions/azsecpack-win  
     
-  #azsecpackw22:
-  #  needs: [pre-build]
-  #  strategy:
-  #    matrix:
-  #      os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-  #  runs-on: ${{ matrix.os }}
-  #  if: contains(${{ inputs.AGENT_SPEC }}, 'windows-2022')
-  #  name: run test on ${{ inputs.AGENT_SPEC }}
-  #  steps:
-  #    - name: repo checkout
-  #      uses: actions/checkout@v3
-  #    - name: run test
-  #      uses: ./.github/actions/azsecpack-win
-
   azsecpackForUbuntu:
     needs: [pre-build]
     if: ${{ needs.pre-build.outputs.isubuntu == 'true' }}
@@ -98,23 +84,10 @@ jobs:
       matrix:
         os: ${{ fromJson(needs.pre-build.outputs.matrix_ubn) }}
     runs-on: ${{ matrix.os }}
-    name: run test on ${{ inputs.AGENT_SPEC }}
+    name: run test on ${{ matrix.os }}
     steps:
       - name: repo checkout
         uses: actions/checkout@v3
       - name: run test
         uses: ./.github/actions/azsecpacl-ubnt
 
- # azsecpacku22:
- #   needs: [pre-build]
- #   strategy:
- #     matrix:
- #       os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
- #   runs-on: ${{ matrix.os }}
- #   if: contains(${{ inputs.AGENT_SPEC }}, 'ubuntu-22.04')
- #   name: run test on ${{ inputs.AGENT_SPEC }}
- #   steps:
- #     - name: repo checkout
- #       uses: actions/checkout@v3
- #     - name: run test
- #       uses: ./.github/actions/azsecpacl-ubnt
