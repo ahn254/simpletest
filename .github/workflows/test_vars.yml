@@ -14,4 +14,4 @@ jobs:
       - name: test dynamic
         uses: ./.github/actions/dynamic-test
         with:
-          action-name: "./.github/workflows/triggered1.yml"
+          action-name: "./.github/actions/azsecpacl-ubnt"
