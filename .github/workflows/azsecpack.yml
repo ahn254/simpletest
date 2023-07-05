@@ -21,7 +21,18 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          $matrixJson = $("${{ inputs.AGENT_SPEC }}").Split(',').Trim() | ConvertTo-Json -AsArray -Compress
+          $matrixArray = $("${{ inputs.AGENT_SPEC }}").Split(',').Trim()
+          $ubnarray = @()
+          $winarray = @()
+          foreach ($item in $matrixArray) {
+            if ($item -match "ubuntu") {
+              $ubnarray += $item
+            } elseif ($item -match "windows") {
+              $winarray += $item
+            }
+          }
+          
+          | ConvertTo-Json -AsArray -Compress
           write-host $matrixJson
 
           "matrix=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
