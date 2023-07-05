@@ -13,7 +13,8 @@ jobs:
   pre-build:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.build_matrix_step.outputs.matrix }}
+      matrix_win: ${{ steps.build_matrix_step.outputs.matrix_win }}
+      matrix_ubn: ${{ steps.build_matrix_step.outputs.matrix_ubn }}
       isubuntu: ${{ steps.build_condition.outputs.IS_UBUNTU }}
       iswindows: ${{ steps.build_condition.outputs.IS_WINDOWS }}
     steps:
@@ -31,11 +32,19 @@ jobs:
               $winarray += $item
             }
           }
-          
-          | ConvertTo-Json -AsArray -Compress
-          write-host $matrixJson
+          if ($winarray.Count -lt 1) {
+            $winarray += "windows-latest"
+          }
 
-          "matrix=$matrixJson" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          if ($ubnarray.Count -lt 1) {
+            $ubnarray += "ubuntu-latest"
+          }
+          
+          write-host $winarray
+          write-host $ubnarray
+
+          "matrix_win=$($winarray | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          "matrix_ubn=$($ubnarray | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
       - name: Build conditions
         id: build_condition
@@ -54,12 +63,12 @@ jobs:
            "IS_UBUNTU=$isUbn01" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
            "IS_WINDOWS=$isWin01" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
       
-  azsecpackw19:
+  azsecpackForWindows:
     needs: [pre-build]
     if: ${{ needs.pre-build.outputs.iswindows == 'true' }}
     strategy:
       matrix:
-        os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+        os: ${{ fromJson(needs.pre-build.outputs.matrix_win) }}
     runs-on: ${{ matrix.os }} 
     name: run test on ${{ inputs.AGENT_SPEC }}
     steps:
@@ -82,12 +91,12 @@ jobs:
   #    - name: run test
   #      uses: ./.github/actions/azsecpack-win
 
-  azsecpacku20:
+  azsecpackForUbuntu:
     needs: [pre-build]
     if: ${{ needs.pre-build.outputs.isubuntu == 'true' }}
     strategy:
       matrix:
-        os: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+        os: ${{ fromJson(needs.pre-build.outputs.matrix_ubn) }}
     runs-on: ${{ matrix.os }}
     name: run test on ${{ inputs.AGENT_SPEC }}
     steps:
