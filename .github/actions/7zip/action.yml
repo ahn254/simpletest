@@ -1,0 +1,12 @@
+name: Create and expand 7z archive
+description: Create and expand 7z archive
+runs:
+  using: composite
+  steps:
+    - name: run test
+      shell: pwsh
+      run: |
+        New-Item -Name "test.txt"
+        7z a test.7z test.txt
+        Remove-Item "test.txt"
+        7z e test.7z
