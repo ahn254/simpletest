@@ -6,16 +6,29 @@ on:
         description: 'image version'
         required: false
 
-jobs:
+jobs: 
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build_matrix_step.outputs.matrix }}
+    steps:
+      - name: Build matrix
+        id: build_matrix_step
+        shell: pwsh
+        run: |
+          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt"
+          $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
+          
+          write-host $matrixArray
+
+          "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          
+
   matrix-tes:
+    needs: [pre-build]
     strategy:
       matrix:
-        include:
-          - test_name: test 1
-            test_path: ./.github/actions/7zip
-          
-          - test_name: test 2
-            test_path: ./.github/actions/azsecpacl-ubnt
+        actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
           
             
     name: run all tests
@@ -24,7 +37,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
      
-      - name: ${{ matrix.test_name }}
-        uses: ${{ ./.github/actions/7zip }}
+      - name: ${{ matrix.actions }}
+        uses: ${{ matrix.actions }}
 
             
