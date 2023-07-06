@@ -38,6 +38,6 @@ jobs:
         uses: actions/checkout@v3
      
       - name: ${{ matrix.actions }}
-        uses: ${{ ./.github/actions/7zip }}
+        uses: ./.github/actions/7zip
 
             
