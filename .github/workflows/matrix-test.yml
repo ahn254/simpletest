@@ -37,7 +37,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
      
-      - name: ${{ matrix.actions }}
-        uses: ./.github/actions/7zip
+      - name: test1
+        uses: ./.github/actions/uses-test
+        with:
+          actions: "${{ matrix.actions }}"
 
             
