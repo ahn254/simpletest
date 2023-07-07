@@ -1,0 +1,11 @@
+name: Compression and decompression test
+description: Compression and decompression test
+runs:
+  using: composite
+  steps:
+    - name: run test
+      shell: pwsh
+      run: |
+        New-Item -Name "test.txt"
+        zstd --rm test.txt
+        zstd -d test.txt.zst
