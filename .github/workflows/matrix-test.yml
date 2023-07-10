@@ -16,7 +16,7 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt, .github/actions/zstd, .github/actions/azsecpack-win"
+          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt, ./.github/actions/zstd, ./.github/actions/azsecpack-win"
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
