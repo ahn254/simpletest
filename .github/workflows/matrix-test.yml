@@ -22,15 +22,14 @@ jobs:
           write-host $matrixArray
 
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          
 
   matrix-tes:
     needs: [pre-build]
     strategy:
+      fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-          
-            
+
     name: run all tests
     runs-on: ubuntu-latest
     steps:
@@ -42,4 +41,60 @@ jobs:
         with:
           actions: "${{ matrix.actions }}"
 
-            
+  build-report:
+    needs: [matrix-tes]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $apiResponse = (gh run view ${{ github.run_id }} --repo ${{ github.repository }} --attempt ${{ github.run_attempt }} --json jobs)
+          $jobs = ($apiResponse | ConvertFrom-Json).jobs `
+            | Where-Object { $_.name -ne "pre-build" -and $_.status -eq 'completed'}
+
+          $testsTotal = 0
+          $testsSuccess = 0
+          $jobs | ForEach-Object {
+            if ($_.conclusion -eq "success") {
+              $_ | Add-Member -MemberType NoteProperty -Name "result" -Value $True
+              $_ | Add-Member -MemberType NoteProperty -Name "resultString" -Value "✅ OK"
+              $testsSuccess += 1
+            } else {
+              $_ | Add-Member -MemberType NoteProperty -Name "result" -Value $False
+              $_ | Add-Member -MemberType NoteProperty -Name "resultString" -Value "❌ Failure"
+            }
+            $_ | Add-Member -MemberType NoteProperty -Name "linkString" -Value "[$($_.databaseId)]($($_.url))"
+            $_ | Add-Member -MemberType NoteProperty -Name "time" -Value ([datetime]::Parse($_.completedAt) - [datetime]::Parse($_.startedAt))
+            $testsTotal += 1
+          }
+          $testsFailure = ($testsTotal-$testsSuccess)
+          
+          "# Tests report" > $env:GITHUB_STEP_SUMMARY
+          "## Stats" >> $env:GITHUB_STEP_SUMMARY
+          "Total: $testsTotal" >> $env:GITHUB_STEP_SUMMARY
+          "Success: $testsSuccess ($(($testsSuccess/$testsTotal).tostring('P')))" >> $env:GITHUB_STEP_SUMMARY
+          "Failure: $testsFailure ($(($testsFailure/$testsTotal).tostring('P')))" >> $env:GITHUB_STEP_SUMMARY
+
+          "## Details" >> $env:GITHUB_STEP_SUMMARY
+          "Test name | Time | Some link with ID | Result" >> $env:GITHUB_STEP_SUMMARY
+          "--- | --: | --- | ---" >> $env:GITHUB_STEP_SUMMARY
+          $jobs | ForEach-Object {
+            "$($_.name) | $($_.time) | $($_.linkString) | $($_.resultString)" >> $env:GITHUB_STEP_SUMMARY
+          }
+          
+          # "## Failures" >> $env:GITHUB_STEP_SUMMARY
+          # $jobs | ForEach-Object {
+          #   if ($_.result) {
+          #     return
+          #   }
+          #   if ($_.PSobject.Properties.name -contains "failure"){
+          #     "- $($_.name): $($_.failure.message)" >> $env:GITHUB_STEP_SUMMARY
+          #   } else {
+          #     "- $($_.name): no message" >> $env:GITHUB_STEP_SUMMARY
+          #   }
+          # }
+
+          Write-Host $env:GITHUB_STEP_SUMMARY
