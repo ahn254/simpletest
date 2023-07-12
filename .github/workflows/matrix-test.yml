@@ -32,20 +32,57 @@ jobs:
 
     name: run all tests
     runs-on: ubuntu-latest
+
+    outputs:
+      outcome: ${{ steps.run.outcome }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
      
-      - name: test1
+      - name: Run test
+        id: run
         uses: ./.github/actions/uses-test
         with:
           actions: "${{ matrix.actions }}"
+     
+      - name: Collect output data
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $time = [int](Get-Date -UFormat %s -Millisecond 0)
+          Write-Host $time >> $env:GITHUB_OUTPUT
 
   build-report:
     needs: [matrix-tes]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
+      - name: Output needs context
+        shell: pwsh
+        run: |
+          $json = '${{ toJSON(needs) }}'
+          $needs = ($json | ConvertFrom-Json)
+          $needs
+
+      - name: Output jobs info using API
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $json = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $jobs = ($json | ConvertFrom-Json).jobs
+          $jobs
+
+      - name: Output jobs info using CLI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $json = (gh run view ${{ github.run_id }} --repo ${{ github.repository }} --attempt ${{ github.run_attempt }} --json jobs)
+          $jobs = ($json | ConvertFrom-Json).jobs
+          $jobs
+
       - name: Create report
         env:
           GH_TOKEN: ${{ github.token }}
