@@ -1,5 +1,6 @@
 run-name: matrix-run
 on:
+  push:
   workflow_dispatch:
     inputs:
       IMAGE_VERSION:
@@ -65,7 +66,7 @@ jobs:
           $needs = ($json | ConvertFrom-Json)
           $needs
 
-      - name: Output jobs info using API
+      - name: Print jobs info
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
@@ -74,21 +75,26 @@ jobs:
           $jobs = ($json | ConvertFrom-Json).jobs
           $jobs
 
-      - name: Output jobs info using CLI
+      - name: Print jobs logs
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          $json = (gh run view ${{ github.run_id }} --repo ${{ github.repository }} --attempt ${{ github.run_attempt }} --json jobs)
+          $json = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
           $jobs = ($json | ConvertFrom-Json).jobs
-          $jobs
+          $jobs | ForEach-Object {
+            if ($_.conclusion -ne "success") {
+              Write-Host "Logs for job $($_.id) $($_.name)"
+              gh api "/repos/${{ github.repository }}/actions/jobs/$($_.id)/logs"
+            }
+          }
 
       - name: Create report
         env:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          $apiResponse = (gh run view ${{ github.run_id }} --repo ${{ github.repository }} --attempt ${{ github.run_attempt }} --json jobs)
+          $apiResponse = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
           $jobs = ($apiResponse | ConvertFrom-Json).jobs `
             | Where-Object { $_.name -ne "pre-build" -and $_.status -eq 'completed'}
 
@@ -97,14 +103,14 @@ jobs:
           $jobs | ForEach-Object {
             if ($_.conclusion -eq "success") {
               $_ | Add-Member -MemberType NoteProperty -Name "result" -Value $True
-              $_ | Add-Member -MemberType NoteProperty -Name "resultString" -Value "✅ OK"
+              $_ | Add-Member -MemberType NoteProperty -Name "result_string" -Value "✅ OK"
               $testsSuccess += 1
             } else {
               $_ | Add-Member -MemberType NoteProperty -Name "result" -Value $False
-              $_ | Add-Member -MemberType NoteProperty -Name "resultString" -Value "❌ Failure"
+              $_ | Add-Member -MemberType NoteProperty -Name "result_string" -Value "❌ Failure"
             }
-            $_ | Add-Member -MemberType NoteProperty -Name "linkString" -Value "[$($_.databaseId)]($($_.url))"
-            $_ | Add-Member -MemberType NoteProperty -Name "time" -Value ([datetime]::Parse($_.completedAt) - [datetime]::Parse($_.startedAt))
+            $_ | Add-Member -MemberType NoteProperty -Name "link_string" -Value "[$($_.id)]($($_.html_url))"
+            $_ | Add-Member -MemberType NoteProperty -Name "duration" -Value ([datetime]::Parse($_.completed_at) - [datetime]::Parse($_.started_at))
             $testsTotal += 1
           }
           $testsFailure = ($testsTotal-$testsSuccess)
@@ -119,7 +125,7 @@ jobs:
           "Test name | Time | Some link with ID | Result" >> $env:GITHUB_STEP_SUMMARY
           "--- | --: | --- | ---" >> $env:GITHUB_STEP_SUMMARY
           $jobs | ForEach-Object {
-            "$($_.name) | $($_.time) | $($_.linkString) | $($_.resultString)" >> $env:GITHUB_STEP_SUMMARY
+            "$($_.name) | $($_.duration) | $($_.link_string) | $($_.result_string)" >> $env:GITHUB_STEP_SUMMARY
           }
           
           # "## Failures" >> $env:GITHUB_STEP_SUMMARY
