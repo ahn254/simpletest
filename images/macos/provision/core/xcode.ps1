@@ -1,14 +1,7 @@
-# The script currently requires 2 external variables to be set: XCODE_INSTALL_USER
-# and XCODE_INSTALL_PASSWORD, in order to access the Apple Developer Center
-
 $ErrorActionPreference = "Stop"
 
 Import-Module "$env:HOME/image-generation/helpers/Common.Helpers.psm1"
 Import-Module "$env:HOME/image-generation/helpers/Xcode.Installer.psm1"
-
-if ([string]::IsNullOrEmpty($env:XCODE_INSTALL_USER) -or [string]::IsNullOrEmpty($env:XCODE_INSTALL_PASSWORD)) {
-    throw "Required environment variables XCODE_INSTALL_USER and XCODE_INSTALL_PASSWORD are not set"
-}
 
 # Spaceship Apple ID login fails due to Apple ID prompting to be upgraded to 2FA.
 # https://github.com/fastlane/fastlane/pull/18116
@@ -28,8 +21,6 @@ $xcodeVersions | ForEach-Object -ThrottleLimit $threadCount -Parallel {
     Import-Module "$env:HOME/image-generation/helpers/Common.Helpers.psm1"
     Import-Module "$env:HOME/image-generation/helpers/Xcode.Installer.psm1"
 
-    'Version={0} LinkTo:{1}' -f $_.version, $_.link
-
     Install-XcodeVersion -Version $_.version -LinkTo $_.link
     Confirm-XcodeIntegrity -Version $_.link
     Approve-XcodeLicense -Version $_.link
@@ -38,9 +29,14 @@ $xcodeVersions | ForEach-Object -ThrottleLimit $threadCount -Parallel {
 Write-Host "Configuring Xcode versions..."
 $xcodeVersions | ForEach-Object {
     Write-Host "Configuring Xcode $($_.link) ..."
-
     Invoke-XcodeRunFirstLaunch -Version $_.link
-    Install-AdditionalSimulatorRuntimes -Version $_.link
+
+    ##if ($_.link.Split(".")[0] -ge 14) {
+    if ($_.link.Split(".")[0] -eq 14) {
+        # Additional simulator runtimes are included by default for Xcode < 14
+        Install-AdditionalSimulatorRuntimes -Version $_.link
+    }
+
 }
 
 Invoke-XcodeRunFirstLaunch -Version $defaultXcode

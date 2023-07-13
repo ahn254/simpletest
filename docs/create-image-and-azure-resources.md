@@ -57,7 +57,7 @@ In any case you will need these software installed:
   ```
 
 - [Az Powershell module](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps).
-  
+
   Run this command in Powershell:
 
   ```powershell
@@ -67,7 +67,7 @@ In any case you will need these software installed:
 ## Automated image generation
 
 This repo bundles script that automates image generation process.
-You only need a build agent configured as described above and active Azure subsctiption.
+You only need a build agent configured as described above and active Azure subscription.
 We suggest to start with UbuntuMinimal image because it includes only a minimal set of required software and builds in less then half an hour.
 
 All steps here are supposed to run in Powershell.
@@ -84,6 +84,11 @@ Then import [GenerateResourcesAndImage](../helpers/GenerateResourcesAndImage.ps1
 ```powershell
 Import-Module .\helpers\GenerateResourcesAndImage.ps1
 ```
+
+> :warning: When running `GenerateResourcesAndImage` in PowerShell 7.3, following command should be executed first:
+> ```powershell
+> $PSNativeCommandArgumentPassing = 'Legacy'
+> ```
 
 Finally, run `GenerateResourcesAndImage` function setting mandatory arguments: image type and where to create resources:
 

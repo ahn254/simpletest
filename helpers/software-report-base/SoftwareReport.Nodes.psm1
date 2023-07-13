@@ -157,7 +157,7 @@ class HeaderNode: BaseNode {
 }
 
 class ToolVersionNode: BaseToolNode {
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [String] $Version
 
     ToolVersionNode([String] $ToolName, [String] $Version): base($ToolName) {
@@ -186,7 +186,7 @@ class ToolVersionNode: BaseToolNode {
 }
 
 class ToolVersionsListNode: BaseToolNode {
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [String[]] $Versions
 
     [Regex] $MajorVersionRegex
@@ -254,9 +254,9 @@ class ToolVersionsListNode: BaseToolNode {
 
 class TableNode: BaseNode {
     # It is easier to store the table as rendered lines because it will simplify finding differences in rows later
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [String] $Headers
-    #[ValidateNotNullOrEmpty()]
+    [ValidateNotNullOrEmpty()]
     [String[]] $Rows
 
     TableNode([String] $Headers, [String[]] $Rows) {
@@ -279,10 +279,10 @@ class TableNode: BaseNode {
         $maxColumnWidths = $this.CalculateColumnsWidth()
         $columnsCount = $maxColumnWidths.Count
 
-        $delimeterLine = [String]::Join("|", @("-") * $columnsCount)
+        $delimiterLine = [String]::Join("|", @("-") * $columnsCount)
 
         $sb = [System.Text.StringBuilder]::new()
-        @($this.Headers) + @($delimeterLine) + $this.Rows | ForEach-Object {
+        @($this.Headers) + @($delimiterLine) + $this.Rows | ForEach-Object {
             $sb.Append("|")
             $row = $_.Split("|")
 

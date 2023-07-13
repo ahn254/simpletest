@@ -29,13 +29,8 @@ function Invoke-DownloadXcodeArchive {
     $tempXipDirectory = New-Item -Path $DownloadDirectory -Name "Xcode$Version" -ItemType "Directory"
 
     $xcodeFileName = 'Xcode-{0}.xip' -f $Version
-    $xcodeUri = '{0}{1}{2}'-f ${env:xcode_install_storage}, $xcodeFileName, ${env:xcode_install_sas}
+    $xcodeUri = '{0}{1}{2}'-f ${env:XCODE_INSTALL_STORAGE_URL}, $xcodeFileName, ${env:XCODE_INSTALL_SAS}
 
-    Write-Host '-----------------------'
-    $enc = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($xcodeUri))
-    Write-Host $enc
-    Write-Host '======================='
- 
     Invoke-WebRequest -Uri $xcodeUri -OutFile (Join-Path $tempXipDirectory $xcodeFileName)
 
     return $tempXipDirectory
@@ -168,14 +163,9 @@ function Install-AdditionalSimulatorRuntimes {
         [string]$Version
     )
 
-    if (-not $Version.StartsWith("14.")) {
-        # Additional simulator runtimes are included by default for Xcode < 14
-        return
-    }
-
-    Write-Host "Installing Simulator Runtimes for Xcode $($_.link) ..."
+    Write-Host "Installing Simulator Runtimes for Xcode $Version ..."
     $xcodebuildPath = Get-XcodeToolPath -Version $Version -ToolName "xcodebuild"
-    Invoke-ValidateCommand "$xcodebuildPath -downloadAllPlatforms"
+    Invoke-ValidateCommand "$xcodebuildPath -downloadAllPlatforms | xcpretty"
 }
 
 function Build-XcodeSymlinks {
