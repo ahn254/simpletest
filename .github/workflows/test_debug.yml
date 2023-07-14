@@ -9,8 +9,9 @@ jobs:
       matrix:
         python: [3.6, 3.7, 3.8, 3.9, "3.10"]
                       
-    name: run-test
+    name: python-build-c-extension
     runs-on: ubuntu-20.04
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v3
      
@@ -25,7 +26,7 @@ jobs:
       matrix:
         python: [3.6, 3.7, 3.8, 3.9, "3.10"]
                       
-    name: run-test
+    name: python-build-extension
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
@@ -38,7 +39,7 @@ jobs:
 
   python-check-default:
                      
-    name: run-test
+    name: python-check-default
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
@@ -48,7 +49,7 @@ jobs:
         uses: ./.github/actions/python-check-default
 
   python-default:
-    name: run-test
+    name: python-default
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
@@ -58,7 +59,7 @@ jobs:
         uses: ./.github/actions/python-default
 
   python-package:
-    name: run-test
+    name: python-package
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout repository
