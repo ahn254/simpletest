@@ -1,0 +1,55 @@
+name: ${{ inputs.IMAGE_LABEL }}-${{ inputs.IMAGE_VERSION }} canary tests
+
+on:
+  repository_dispatch:
+    types: [ubuntu22]
+    
+  workflow_dispatch:
+    inputs:
+      IMAGE_VERSION:
+        description: 'Image version'
+        required: false
+      IMAGE_LABEL:
+        description: 'OS platform'
+        required: false   
+        
+        
+jobs: 
+  pre-build:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.build_matrix_step.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+      - name: Build matrix
+        id: build_matrix_step
+        shell: pwsh
+        run: |
+          get-content "./_canary.json"
+          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt, ./.github/actions/zstd, ./.github/actions/azsecpack-win"
+          $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
+          
+          write-host $matrixArray
+
+          "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          
+
+  matrix-tes:
+    needs: [pre-build]
+    strategy:
+      matrix:
+        actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+          
+            
+    name: run all tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: test1
+        uses: ./.github/actions/uses-test
+        with:
+          actions: "${{ matrix.actions }}"
