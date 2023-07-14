@@ -1,0 +1,44 @@
+steps:
+  - task: UsePythonVersion@0
+    displayName: Use Python ${{ parameters.pythonVersion }}
+    inputs:
+      versionSpec: ${{ parameters.pythonVersion }}
+
+  - bash: |
+      set -e
+      pip install tox
+    displayName: 'Install Tox'
+
+    # Checkout a certain commit to avoid changes in the Tox tests
+  - bash: |
+      set -e
+      git clone "https://github.com/tox-dev/tox.git" --branch "main"
+      cd tox
+      git checkout "adccfb6b1e021458e02956dc84197dcdd05d6eed"
+    displayName: 'Clone Tox repository'
+
+    # After packaging was updated 28th November, It started produce more Warnings and 
+    # tox tests started to fail. Until tests will be fixed, we disable some tests.
+  - task: PowerShell@2
+    displayName: 'Add tests to ignore case'
+    inputs:
+      targetType: inline
+      script: |
+        # Install specific virtualenv 20.4.0 due to possible issues with tox and load package
+        # pip --version
+        # pip install --upgrade virtualenv==20.4.0
+        cd tox
+        $searchPattern = [regex]::Escape("pytest {")
+        $ignoreCommand = "pytest \`n`t  --ignore=tests/tox_env/python/test_python_api.py --ignore=tests/session/cmd/test_list_envs.py --ignore=tests/session/cmd/test_depends.py --ignore=tests/session/cmd/test_show_config.py --ignore=tests/tox_env/python/virtual_env/test_virtualenv_api.py \`n`t{"
+        (Get-Content "./tox.ini") -replace $searchPattern, $ignoreCommand | Set-Content ./tox.ini
+        (Get-Content "./tox.ini" -Raw) -replace [regex]"\{posargs(\w|\W)+run-integration\}", "" | Set-Content ./tox.ini
+      pwsh: true
+
+  - bash: |
+      set -e
+      cd tox
+      pythonVersion=${{ parameters.pythonVersion }}
+      pyVer=${pythonVersion/\./''}
+      pyVer=${pyVer/py/''}
+      tox -e py$pyVer --skip-missing-interpreters false
+    displayName: 'Test tox'

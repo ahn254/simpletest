@@ -1,0 +1,68 @@
+run-name: test_debug
+on:
+  workflow_dispatch:
+  push:
+
+jobs: 
+  python-build-c-extension:
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9, 3.10]
+                      
+    name: run-test
+    runs-on: ubuntu-20.04
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-c-extension
+        uses: ./.github/actions/python-c-extension
+        with:
+          python: "${{ matrix.python }}"
+
+            
+  python-build-extension:
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9, 3.10]
+                      
+    name: run-test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-extension
+        uses: ./.github/actions/python-extension
+        with:
+          python: "${{ matrix.python }}"
+
+  python-check-default:
+                     
+    name: run-test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-check-default
+        uses: ./.github/actions/python-check-default
+
+  python-default:
+    name: run-test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-default
+        uses: ./.github/actions/python-default
+
+  python-package:
+    name: run-test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-package
+        uses: ./.github/actions/python-package

@@ -1,0 +1,8 @@
+name: Python default
+description: Python default tests
+runs:
+  using: composite
+  steps:
+    - name: Run simple app
+      shell: bash
+      run: python src/python/python-default/simple_app.py

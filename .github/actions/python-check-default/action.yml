@@ -1,0 +1,25 @@
+name: Python check default
+description: Python check default test
+
+runs:
+  using: composite
+  steps:
+
+    - name: Check Python Path
+      shell: bash
+      run: |
+        pypath=$(which python3 2>&1)
+        echo "Python path is: "$pypath
+        if [[ $pypath  == "/usr/local/bin/python3" ]] || [[ $pypath  == "/usr/bin/python3" ]]
+        then
+            echo "Python path is OK."
+        else
+            echo "Unexpected Python3 path."
+            exit 1
+        fi
+
+    - name: Run a Python script
+      shell: bash
+      run: |
+            python -c 'import requests'
+            python -c 'print("hello world")'

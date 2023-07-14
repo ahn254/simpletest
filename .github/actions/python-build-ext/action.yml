@@ -1,0 +1,22 @@
+name: Python build extension
+description: Python build extension tests
+inputs: 
+  python:
+    description: version of python
+    required: true
+    default: "none"
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4.7.0
+      with:      
+        python-version: ${{ inputs.python }}
+
+    - name: Install psutil
+      shell: bash
+      run: |
+        python -m venv /tmp/aml-ve
+        source /tmp/aml-ve/bin/activate
+        easy_install --version
+        pip install psutil --verbose
