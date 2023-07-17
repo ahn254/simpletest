@@ -18,7 +18,7 @@ jobs:
         shell: pwsh
         run: |
           $paths = "./.github/actions/python-c-extension"
-          $parameters = "3.7, 3.8, 3.9, 3.10"
+          $parameters = "python: 3.7, python: 3.8, python: 3.9, python: 3.10"
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
