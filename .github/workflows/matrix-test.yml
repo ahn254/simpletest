@@ -48,7 +48,7 @@ jobs:
       - name: test1
         uses: ./.github/actions/another-test
         with:
-          inputs: "${{ matrix.actions }}"
+          uses: "${{ matrix.actions }}"
           with: "${{ matrix.with }}"
 
             
