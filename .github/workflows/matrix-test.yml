@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
-      params: ${{ steps.build_matrix_step.outputs.params }}
+      params01: ${{ steps.build_matrix_step.outputs.params01 }}
     steps:
       - name: Build matrix
         id: build_matrix_step
@@ -27,7 +27,7 @@ jobs:
           write-host $matrixParameters
           
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          "params=$matrixParameters | Out-File -Append -FilePath $env:GITHUB_OUTPUT"
+          "params01=$matrixParameters | Out-File -Append -FilePath $env:GITHUB_OUTPUT"
           
 
   matrix-tes:
@@ -36,7 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-        params: ${{ fromJson(needs.pre-build.outputs.params) }}
+        with: ${{ fromJson(needs.pre-build.outputs.params01) }}
           
             
     name: run all tests
@@ -49,6 +49,6 @@ jobs:
         uses: ./.github/actions/uses-test
         with:
           actions: "${{ matrix.actions }}"
-          with: "${{ matrix.params }}"
+          with: "${{ matrix.with }}"
 
             
