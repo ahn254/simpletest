@@ -11,17 +11,23 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
+      params: ${{ steps.build_matrix_step.outputs.params }}
     steps:
       - name: Build matrix
         id: build_matrix_step
         shell: pwsh
         run: |
-          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt, ./.github/actions/zstd, ./.github/actions/azsecpack-win"
+          $paths = "./.github/actions/python-c-extension"
+          $parameters = "3.7, 3.8, 3.9, 3.10"
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
-
+          $matrixParameters = $parameters.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
+          
+          write-host $matrixParameters
+          
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          "params=$matrixParameters | Out-File -Append -FilePath $env:GITHUB_OUTPUT"
           
 
   matrix-tes:
@@ -30,6 +36,7 @@ jobs:
       fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+        params: ${{ fromJson(needs.pre-build.outputs.params) }}
           
             
     name: run all tests
@@ -42,5 +49,6 @@ jobs:
         uses: ./.github/actions/uses-test
         with:
           actions: "${{ matrix.actions }}"
+          with: "${{ matrix.params }}"
 
             
