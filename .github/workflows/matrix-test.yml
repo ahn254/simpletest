@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
-      params01: ${{ steps.build_matrix_step.outputs.params01 }}
+      #params01: ${{ steps.build_matrix_step.outputs.params01 }}
     steps:
       - name: Build matrix
         id: build_matrix_step
@@ -22,14 +22,14 @@ jobs:
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
-          $parameters = '"none",[["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"]],"none"'
+          #$parameters = '"none",[["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"]],"none"'
 
-          $matrixParameters = $parameters.Split(",[").Split("],") | ConvertTo-Json -AsArray -Compress
+          #$matrixParameters = $parameters.Split(",[").Split("],") | ConvertTo-Json -AsArray -Compress
           
-          write-host $matrixParameters
+          #write-host $matrixParameters
           
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          "params01=$matrixParameters" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          #"params01=$matrixParameters" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
           
 
   matrix-tes:
@@ -38,7 +38,7 @@ jobs:
       fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-        with: ${{ fromJson(needs.pre-build.outputs.params01) }}
+        #with: ${{ fromJson(needs.pre-build.outputs.params01) }}
           
             
     name: run all tests
@@ -50,13 +50,16 @@ jobs:
       - name: parse matrix
         shell: pwsh
         run: |
-          $matrixInput = ${{ matrix.with }} | ConvertFrom-Json -Depth 5
+          $matrixJson = '["\"none\"","[\"python\": \"3.7\", \"python\": \"3.8\", \"python\": \"3.9\", \"python\": \"3.10\"]","\"none\""]'
+          $matrixInput = matrixJson | ConvertFrom-Json -Depth 5
           foreach ($item in $matrixInput) {
           if ($item -match "none") {
               $arrayItem = ${{ null }}
+              write-host $arrayItem
               "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
           } else {
               $arrayItem = $($item.Trim("[]") | ConvertTo-Json -AsArray -Compress)
+              write-host $arrayItem
               "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
           }
           }
