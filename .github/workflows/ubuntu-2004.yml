@@ -1,42 +1,46 @@
-run-name: matrix-run
+name: ${{ inputs.IMAGE_LABEL }}-${{ inputs.IMAGE_VERSION }} canary tests
+
 on:
+  repository_dispatch:
+    types: [ubuntu22]
+    
   workflow_dispatch:
     inputs:
       IMAGE_VERSION:
-        description: 'image version'
+        description: 'Image version'
         required: false
-
+      IMAGE_LABEL:
+        description: 'OS platform'
+        required: false   
+        
+        
 jobs: 
   pre-build:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
-      params01: ${{ steps.build_matrix_step.outputs.params01 }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
       - name: Build matrix
         id: build_matrix_step
         shell: pwsh
         run: |
-          $paths = "./.github/actions/python-c-extension"
-          $parameters = '"python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"'
+          get-content "./_canary.json"
+          $paths = "./.github/actions/7zip, ./.github/actions/azsecpacl-ubnt, ./.github/actions/zstd, ./.github/actions/azsecpack-win"
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
-          $matrixParameters = $parameters.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
-          
-          write-host $matrixParameters
-          
+
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          "params01=$matrixParameters" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
           
 
   matrix-tes:
     needs: [pre-build]
     strategy:
-      fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-        with: ${{ fromJson(needs.pre-build.outputs.params01) }}
           
             
     name: run all tests
@@ -46,9 +50,6 @@ jobs:
         uses: actions/checkout@v3
      
       - name: test1
-        uses: ./.github/actions/another-test
+        uses: ./.github/actions/uses-test
         with:
-          uses: "${{ matrix.actions }}"
-          with: '{ ${{ matrix.with }} }'
-
-            
+          actions: "${{ matrix.actions }}"
