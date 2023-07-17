@@ -1,0 +1,69 @@
+run-name: test_debug
+on:
+  workflow_dispatch:
+  push:
+
+jobs: 
+  python-build-c-extension:
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9, "3.10"]
+                      
+    name: python-build-c-extension
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-c-extension
+        uses: ./.github/actions/python-c-extension
+        with:
+          python: "${{ matrix.python }}"
+
+            
+  python-build-extension:
+    strategy:
+      matrix:
+        python: [3.6, 3.7, 3.8, 3.9, "3.10"]
+                      
+    name: python-build-extension
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-extension
+        uses: ./.github/actions/python-build-ext
+        with:
+          python: "${{ matrix.python }}"
+
+  python-check-default:
+                     
+    name: python-check-default
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-check-default
+        uses: ./.github/actions/python-check-default
+
+  python-default:
+    name: python-default
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-default
+        uses: ./.github/actions/python-default
+
+  python-package:
+    name: python-package
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+     
+      - name: python-package
+        uses: ./.github/actions/python-package

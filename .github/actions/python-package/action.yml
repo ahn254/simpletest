@@ -1,0 +1,18 @@
+name: Python package
+description: Python package tests
+runs:
+  using: composite
+  steps:
+    - name: Setup Python
+      uses: actions/setup-python@v4.7.0
+      with:      
+        python-version: 3.*
+
+    - name: Install dependencies
+      shell: bash
+      run: pip install nox
+
+    - name: Prepare dummy release
+      shell: bash
+      working-directory: 'src/python/umsg/'
+      run: ""
