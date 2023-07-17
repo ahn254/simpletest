@@ -27,6 +27,7 @@ jobs:
   matrix-tes:
     needs: [pre-build]
     strategy:
+      fail-fast: false
       matrix:
         actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
           
