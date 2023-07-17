@@ -17,12 +17,14 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          $paths = "./.github/actions/python-c-extension"
-          $parameters = '"python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"'
+          $paths = "./.github/actions/zstd, ./.github/actions/python-c-extension, ./.github/actions/7zip"
+          #$parameters = '"",["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"],""'
           $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixArray
-          $matrixParameters = $parameters.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
+          $parameters = '"none",[["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"]],"none"'
+
+          $matrixParameters = $parameters.Split(",[").Split("],") | ConvertTo-Json -AsArray -Compress
           
           write-host $matrixParameters
           
@@ -44,11 +46,25 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+      
+      - name: parse matrix
+        shell: pwsh
+        run: |
+          $matrixInput = ${{ matrix.with }} | ConvertFrom-Json -Depth 5
+          foreach ($item in $matrixInput) {
+          if ($item -match "none") {
+              $arrayItem = ${{ null }}
+              "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
+          } else {
+              $arrayItem = $($item.Trim("[]") | ConvertTo-Json -AsArray -Compress)
+              "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
+          }
+          }
      
       - name: test1
         uses: ./.github/actions/another-test
         with:
           uses: "${{ matrix.actions }}"
-          with: '{ ${{ matrix.with }} }'
+          with: '{ ${{ env.TEST_PARAMETERS }} }'
 
             
