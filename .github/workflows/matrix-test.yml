@@ -27,7 +27,7 @@ jobs:
           write-host $matrixParameters
           
           "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          "params01=$matrixParameters | Out-File -Append -FilePath $env:GITHUB_OUTPUT"
+          "params01=$matrixParameters" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
           
 
   matrix-tes:
