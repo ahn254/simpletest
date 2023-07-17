@@ -52,15 +52,20 @@ jobs:
         run: |
           $matrixJson = '["\"none\"","[\"python\": \"3.7\", \"python\": \"3.8\", \"python\": \"3.9\", \"python\": \"3.10\"]","\"none\""]'
           $matrixInput = $matrixJson | ConvertFrom-Json -Depth 5
+          write-host "${{ matrix.actions }}"
           foreach ($item in $matrixInput) {
           if ($item -match "none") {
               $arrayItem = ${{ null }}
+              write-host "match none"
               write-host $arrayItem
               "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
           } else {
               $arrayItem = $($item.Trim("[]") | ConvertTo-Json -AsArray -Compress)
               write-host $arrayItem
               "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
+              if ("${{ matrix.actions }}" -match "python") {
+                break
+              }
           }
           }
      
