@@ -57,9 +57,9 @@ jobs:
             include = $matrixArray
           }
 
-          write-host $($matrix | ConvertTo-Json -AsArray -Compress)
+          write-host $($matrix | ConvertTo-Json -Compress)
 
-          "matrix=$($matrix | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          "matrix=$($matrix | ConvertTo-Json -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
 
   matrix-tests:
     needs: [pre-build]
