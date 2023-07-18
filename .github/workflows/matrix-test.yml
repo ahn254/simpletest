@@ -48,8 +48,8 @@ jobs:
                       $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$null})
                   } else {
                       foreach ($matrixItem in $test.matrix.$IMAGE_LABEL) {
-                          $testNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
-                          $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$matrixItem})
+                          $tempNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
+                          $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$tempNmae;parameter=$matrixItem})
                       }
                   }
               }
