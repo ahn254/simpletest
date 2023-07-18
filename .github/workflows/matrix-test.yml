@@ -1,78 +1,81 @@
-run-name: matrix-run
+run-name: Run tests ${{ inputs.IMAGE_LABEL }} - ${{ inputs.IMAGE_VERSION }}
 on:
   workflow_dispatch:
     inputs:
       IMAGE_VERSION:
         description: 'image version'
         required: false
+      AGENT_SPEC:
+        description: 'Agent spec'
+        required: false
+      IMAGE_LABEL:
+        description: 'image label e.g. win19, macOS-11, ubuntu22'
+        required: false
 
-jobs: 
+jobs:
   pre-build:
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
-      #params01: ${{ steps.build_matrix_step.outputs.params01 }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Build matrix
         id: build_matrix_step
         shell: pwsh
         run: |
-          $paths = "./.github/actions/zstd, ./.github/actions/python-c-extension, ./.github/actions/7zip"
-          #$parameters = '"",["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"],""'
-          $matrixArray = $paths.Split(',').Trim() | ConvertTo-Json -AsArray -Compress
-          
-          write-host $matrixArray
-          #$parameters = '"none",[["python": "3.7", "python": "3.8", "python": "3.9", "python": "3.10"]],"none"'
+          $IMAGE_LABEL = "${{ inputs.IMAGE_LABEL }}"
+          $AllowedCanaryTests =  Get-Content -Path ./_canary.json -Raw | ConvertFrom-Json -Depth 9
+          $matrixArray = @()
+          foreach ($test in $AllowedCanaryTests) {
+              if (-not [string]::IsNullOrEmpty($($test | Where-Object {$_.supportedOSes -match $IMAGE_LABEL}).name)) {
+                  if ($test.templates.Count -eq 1 ) {
+                      $testPath = './.github/actions/' + $test.templates
+                      $testNmae = $test.name
+                  } else {
+                      switch -Exact -Regex ($IMAGE_LABEL)
+                      {
+                          "ubuntu" {$suffix = "-ubnt"}
+                          "win" {$suffix = "-win"}
+                          "mac" {$suffix = "-mac"}
+                      }
+                      $testPath = './.github/actions/' + $($test.templates | Where-Object {$_ -match $suffix})
+                      $testNmae = $test.name
+                  }
 
-          #$matrixParameters = $parameters.Split(",[").Split("],") | ConvertTo-Json -AsArray -Compress
-          
-          #write-host $matrixParameters
-          
-          "matrix=$matrixArray" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          #"params01=$matrixParameters" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-          
+                  if ([string]::IsNullOrEmpty($test.matrix)) {
+                      $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$null})
+                  } else {
+                      foreach ($matrixItem in $test.matrix.$IMAGE_LABEL) {
+                          $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$matrixItem})
+                      }
+                  }
+              }
+          }
+          [pscustomobject]$matrix = @{
+            include = $matrixArray
+          }
 
-  matrix-tes:
+          write-host $($matrix | ConvertTo-Json -AsArray -Compress)
+
+          "matrix=$($matrix | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+
+  matrix-tests:
     needs: [pre-build]
     strategy:
+      max-parallel: 3
       fail-fast: false
-      matrix:
-        actions: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-        #with: ${{ fromJson(needs.pre-build.outputs.params01) }}
-          
-            
+      matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
+
     name: run all tests
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.AGENT_SPEC }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      
-      - name: parse matrix
-        shell: pwsh
-        run: |
-          $matrixJson = '["\"none\"","[\"python\": \"3.7\", \"python\": \"3.8\", \"python\": \"3.9\", \"python\": \"3.10\"]","\"none\""]'
-          $matrixInput = $matrixJson | ConvertFrom-Json -Depth 5
-          write-host "${{ matrix.actions }}"
-          foreach ($item in $matrixInput) {
-          if ($item -match "none") {
-              $arrayItem = ${{ null }}
-              write-host "match none"
-              write-host $arrayItem
-              "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
-          } else {
-              $arrayItem = $($item.Trim("[]") | ConvertTo-Json -AsArray -Compress)
-              write-host $arrayItem
-              "TEST_PARAMETERS=$arrayItem" | Out-File -Append $env:GITHUB_ENV
-              if ("${{ matrix.actions }}" -match "python") {
-                break
-              }
-          }
-          }
-     
-      - name: test1
+
+      - name: "${{ matrix.testNmae }}"
         uses: ./.github/actions/another-test
         with:
           uses: "${{ matrix.actions }}"
-          with: '{ ${{ env.TEST_PARAMETERS }} }'
-
-            
+          with: '{ ${{ matrix.parameter }} }'
