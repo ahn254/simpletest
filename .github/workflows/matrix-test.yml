@@ -48,6 +48,7 @@ jobs:
                       $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$null})
                   } else {
                       foreach ($matrixItem in $test.matrix.$IMAGE_LABEL) {
+                          $testNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
                           $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$matrixItem})
                       }
                   }
@@ -75,7 +76,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "${{ matrix.testNmae }}"
-        uses: ./.github/actions/another-test
+        uses: ./.github/actions/invoke-uses
         with:
           uses: "${{ matrix.actions }}"
           with: '{ ${{ matrix.parameter }} }'
