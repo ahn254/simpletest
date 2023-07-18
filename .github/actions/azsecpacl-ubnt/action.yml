@@ -13,11 +13,11 @@ runs:
           "azuremonitoragentmgr.service" = "Azure Monitor Agent Manager daemon"
           "clamav-freshclam.service" = "ClamAV virus database updater"
         }
-    
+
         $result = @()
         $allServices = systemctl list-units --type=service --state=active
         $isInstalled = $false
-    
+
         foreach($service in $services.GetEnumerator() | Sort-Object Name) {
             $isPresent = $allServices | Select-String $service.Key -Quiet
             $status = "-"
@@ -27,7 +27,7 @@ runs:
             }
             $result += "`t[$status] $($service.Value) ($($service.Key))"
         }
-    
+
         if ($isInstalled) {
             Write-Host "Azure Security Pack is installed:"
             $result | Out-String
