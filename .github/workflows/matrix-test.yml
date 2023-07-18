@@ -68,7 +68,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
 
-    name: run all tests
+    name: "${{ matrix.testNmae }} ${{ matrix.parameter }}"
     runs-on: ${{ inputs.AGENT_SPEC }}
     steps:
       - name: Checkout repository
