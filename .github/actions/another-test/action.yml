@@ -20,14 +20,14 @@ runs:
         $actionYml = @"
         outputs:
           outputs:
-            value: ${{ '$' }}{{ toJSON(steps.run.outputs) }}
+            value: ${`{ '$' `}}{`{ toJSON(steps.run.outputs) `}}
         runs:
           using: composite
           steps:
           - name: Run
             id: run
-            uses: ${{ inputs.uses }}
-            with: ${{ inputs.with || '{}' }}
+            uses: ${`{ inputs.uses `}}
+            with: ${`{ inputs.with || '`{`}' `}}
         "@ | Out-File ./.tmp-invoke-tests/action.yml
     - name: Run
       id: run
