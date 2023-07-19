@@ -117,5 +117,12 @@
                 "\"python\": \"3.10\""
             ]
         }
+    },
+    {
+        "name": "new test",
+        "supportedOSes": "win19, win22, macOS-11, macOS-12",
+        "templates": [
+            "7zip"
+        ]
     }
 ]
