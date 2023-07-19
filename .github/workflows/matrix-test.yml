@@ -71,6 +71,9 @@ jobs:
 
     name: "${{ matrix.testNmae }}"
     runs-on: ${{ inputs.AGENT_SPEC }}
+    outputs:
+      outcome: ${{ steps.run.outcome }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -80,3 +83,90 @@ jobs:
         with:
           uses: "${{ matrix.actions }}"
           with: '{ ${{ matrix.parameter }} }'
+
+      - name: Collect output data
+        if: ${{ always() }}
+        shell: pwsh
+        run: |
+          $time = [int](Get-Date -UFormat %s -Millisecond 0)
+          Write-Host $time >> $env:GITHUB_OUTPUT
+
+  build-report:
+    needs: [matrix-tests]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output needs context
+        shell: pwsh
+        run: |
+          $json = '${{ toJSON(needs) }}'
+          $needs = ($json | ConvertFrom-Json)
+          $needs
+      - name: Print jobs info
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $json = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $jobs = ($json | ConvertFrom-Json).jobs
+          $jobs
+      - name: Create report
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          $apiResponse = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $jobs = ($apiResponse | ConvertFrom-Json).jobs `
+            | Where-Object { $_.name -ne "pre-build" -and $_.status -eq 'completed'}
+          $testsTotal = 0
+          $testsSuccess = 0
+          foreach ( $job in $jobs ) {
+            if ($job.conclusion -eq "success") {
+              $job | Add-Member -MemberType NoteProperty -Name "result" -Value $True
+              $job | Add-Member -MemberType NoteProperty -Name "result_string" -Value "✅ OK"
+              $testsSuccess += 1
+            } else {
+              $job | Add-Member -MemberType NoteProperty -Name "result" -Value $False
+              $job | Add-Member -MemberType NoteProperty -Name "result_string" -Value "❌ Failure"
+            }
+            $job | Add-Member -MemberType NoteProperty -Name "link_string" -Value "[$($job.id)]($($job.html_url))"
+            $job | Add-Member -MemberType NoteProperty -Name "duration" -Value ([datetime]::Parse($job.completed_at) - [datetime]::Parse($job.started_at))
+            $testsTotal += 1
+          }
+          $testsFailure = ($testsTotal-$testsSuccess)
+
+          "# Tests report" > $env:GITHUB_STEP_SUMMARY
+          "## Stats" >> $env:GITHUB_STEP_SUMMARY
+          "Total: $testsTotal" >> $env:GITHUB_STEP_SUMMARY
+          "Success: $testsSuccess ($(($testsSuccess/$testsTotal).tostring('P')))" >> $env:GITHUB_STEP_SUMMARY
+          "Failure: $testsFailure ($(($testsFailure/$testsTotal).tostring('P')))" >> $env:GITHUB_STEP_SUMMARY
+          "## Details" >> $env:GITHUB_STEP_SUMMARY
+          "Test name | Time | Some link with ID | Result" >> $env:GITHUB_STEP_SUMMARY
+          "--- | --: | --- | ---" >> $env:GITHUB_STEP_SUMMARY
+          foreach ( $job in $jobs ) {
+            "$($job.name) | $($job.duration) | $($job.link_string) | $($job.result_string)" >> $env:GITHUB_STEP_SUMMARY
+          }
+
+          "## Failures" >> $env:GITHUB_STEP_SUMMARY
+          foreach ( $job in $jobs ) {
+            if ($job.result) {
+              continue
+            }
+            $failed_step = ($job.steps | Where-Object -Property "conclusion" -EQ "failure" | Select-Object -ExpandProperty "number")
+            "### $($job.name)" >> $env:GITHUB_STEP_SUMMARY
+            $log = (gh api "/repos/${{ github.repository }}/actions/jobs/$($job.id)/logs")
+            $ln = 0
+            $first_line = 0
+            $log | ForEach-Object {
+              $ln += 1
+              if ($_ -match "Run ./.github/actions/uses-test") {
+                $first_line = $ln
+              }
+              if ($_ -match "##\[error\]") {
+                $error_line = $ln - $first_line + 3
+                $error_text = ($_ -replace "^[0-9TZ:\.-]* ##\[error]","")
+                "[${error_line}]($($job.html_url)#step:${failed_step}:${error_line}): ``${error_text}``" >> $env:GITHUB_STEP_SUMMARY
+              }
+            }
+          }
+          Write-Host $env:GITHUB_STEP_SUMMARY
