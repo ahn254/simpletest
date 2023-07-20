@@ -1,4 +1,4 @@
-run-name: Run tests ${{ inputs.IMAGE_LABEL }} - ${{ inputs.IMAGE_VERSION }}
+run-name: Run tests ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION }}
 on:
   workflow_dispatch:
     inputs:
@@ -55,8 +55,20 @@ jobs:
           $time = [int](Get-Date -UFormat %s -Millisecond 0)
           Write-Host $time >> $env:GITHUB_OUTPUT
 
-  build-report:
+  reRunFailedJobs:
     needs: [matrix-tests]
+    if: ${{ failure() }}
+    runs-on: ${{ inputs.AGENT_SPEC }}
+    steps:
+      - name: Re-run failed jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: pwsh
+        run: |
+          gh run rerun ${{ github.run_id }} --failed
+
+  build-report:
+    needs: [reRunFailedJobs]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
