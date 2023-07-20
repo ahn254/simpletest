@@ -1,14 +1,14 @@
 [
     {
         "name": "7zip",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "7zip"
         ]
     },
     {
         "name": "azsecpack",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022",
         "templates": [
             "azsecpack-win",
             "azsecpack-ubnt"
@@ -16,7 +16,7 @@
     },
     {
         "name": "zstd",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "zstd"
         ]
@@ -24,7 +24,7 @@
     {
         "name": "python check default",
         "group": "python-basic",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "python-check-default"
         ]
@@ -32,7 +32,7 @@
     {
         "name": "python default",
         "group": "python-basic",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "python-default"
         ]
@@ -40,7 +40,7 @@
     {
         "name": "python package",
         "group": "python-basic",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "python-package"
         ]
@@ -48,12 +48,12 @@
     {
         "name": "python build extension",
         "group": "python-basic",
-        "supportedOSes": "ubuntu22, ubuntu20, macOS-11, macOS-12",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, macos-11, macos-12",
         "templates": [
             "python-build-ext"
         ],
         "matrix": {
-            "ubuntu20":
+            "ubuntu-20.04":
             [
                 "\"python\": \"3.6\"",
                 "\"python\": \"3.7\"",
@@ -61,18 +61,18 @@
                 "\"python\": \"3.9\"",
                 "\"python\": \"3.10\""
             ],
-            "ubuntu22":
+            "ubuntu-22.04":
             [
                 "\"python\": \"3.10\""
             ],
-            "macOS-11":
+            "macos-11":
             [
                 "\"python\": \"3.7\"",
                 "\"python\": \"3.8\"",
                 "\"python\": \"3.9\"",
                 "\"python\": \"3.10\""
             ],
-            "macOS-12":
+            "macos-12":
             [
                 "\"python\": \"3.7\"",
                 "\"python\": \"3.8\"",
@@ -84,12 +84,12 @@
     {
         "name": "python build c-extension",
         "group": "python-basic",
-        "supportedOSes": "ubuntu22, ubuntu20, win19, win22",
+        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022",
         "templates": [
             "python-c-extension"
         ],
         "matrix": {
-            "ubuntu20":
+            "ubuntu-20.04":
             [
                 "\"python\": \"3.6\"",
                 "\"python\": \"3.7\"",
@@ -97,11 +97,11 @@
                 "\"python\": \"3.9\"",
                 "\"python\": \"3.10\""
             ],
-            "ubuntu22":
+            "ubuntu-22.04":
             [
                 "\"python\": \"3.10\""
             ],
-            "win19":
+            "windows-2019":
             [
                 "\"python\": \"3.6\"",
                 "\"python\": \"3.7\"",
@@ -109,7 +109,7 @@
                 "\"python\": \"3.9\"",
                 "\"python\": \"3.10\""
             ],
-            "win22":
+            "windows-2022":
             [
                 "\"python\": \"3.7\"",
                 "\"python\": \"3.8\"",
@@ -120,7 +120,7 @@
     },
     {
         "name": "new test",
-        "supportedOSes": "win19, win22, macOS-11, macOS-12",
+        "supportedOSes": "windows-2019, windows-2022, macos-11, macos-12",
         "templates": [
             "7zip"
         ]

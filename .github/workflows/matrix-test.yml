@@ -25,7 +25,7 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          $IMAGE_LABEL = "${{ inputs.IMAGE_LABEL }}"
+          $IMAGE_LABEL = "${{ inputs.AGENT_SPEC }}"
           $AllowedCanaryTests =  Get-Content -Path ./_canary.json -Raw | ConvertFrom-Json -Depth 9
           $matrixArray = @()
           foreach ($test in $AllowedCanaryTests) {
