@@ -66,7 +66,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh run rerun ${{ github.run_id }} --failed --repo ${{ github.repository }}
+          $alljobs = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $failedjobs = ($alljobs | ConvertFrom-Json).jobs | Where-Object { $_.name -ne "pre-build" -and $_.conclusion -eq 'failure'}
+          foreach ($fjob in $failedjobs) {
+            write-host $fjob
+            gh run rerun ${{ github.run_id }} --job $fjob.id
+          }
+          #--repo ${{ github.repository }}
 
   build-report:
     needs: [reRunFailedJobs]
