@@ -69,8 +69,8 @@ jobs:
           $alljobs = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
           $failedjobs = ($alljobs | ConvertFrom-Json).jobs | Where-Object { $_.name -ne "pre-build" -and $_.conclusion -eq 'failure'}
           foreach ($fjob in $failedjobs) {
-            write-host $fjob
-            gh run rerun ${{ github.run_id }} --job $fjob.id
+            write-host "failed job id - " $($fjob.id)
+            gh run rerun --job $fjob.id
           }
           #--repo ${{ github.repository }}
 
