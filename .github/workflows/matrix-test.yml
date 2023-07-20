@@ -6,11 +6,9 @@ on:
         description: 'image version'
         required: false
       AGENT_SPEC:
-        description: 'Agent spec'
+        description: 'Agent spec e.g. windows-2019, ubuntu-22.04, macos-12'
         required: false
-      IMAGE_LABEL:
-        description: 'image label e.g. win19, macOS-11, ubuntu22'
-        required: false
+
 
 jobs:
   pre-build:
@@ -25,42 +23,8 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          $IMAGE_LABEL = "${{ inputs.AGENT_SPEC }}"
-          $AllowedCanaryTests =  Get-Content -Path ./_canary.json -Raw | ConvertFrom-Json -Depth 9
-          $matrixArray = @()
-          foreach ($test in $AllowedCanaryTests) {
-              if (-not [string]::IsNullOrEmpty($($test | Where-Object {$_.supportedOSes -match $IMAGE_LABEL}).name)) {
-                  if ($test.templates.Count -eq 1 ) {
-                      $testPath = './.github/actions/' + $test.templates
-                      $testNmae = $test.name
-                  } else {
-                      switch -Exact -Regex ($IMAGE_LABEL)
-                      {
-                          "ubuntu" {$suffix = "-ubnt"}
-                          "win" {$suffix = "-win"}
-                          "mac" {$suffix = "-mac"}
-                      }
-                      $testPath = './.github/actions/' + $($test.templates | Where-Object {$_ -match $suffix})
-                      $testNmae = $test.name
-                  }
-
-                  if ([string]::IsNullOrEmpty($test.matrix)) {
-                      $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$null})
-                  } else {
-                      foreach ($matrixItem in $test.matrix.$IMAGE_LABEL) {
-                          $tempNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
-                          $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$tempNmae;parameter=$matrixItem})
-                      }
-                  }
-              }
-          }
-          [pscustomobject]$matrix = @{
-            include = $matrixArray
-          }
-
-          write-host $($matrix | ConvertTo-Json -Compress)
-
-          "matrix=$($matrix | ConvertTo-Json -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          ./scripts/build-dynamic-matrix.ps1 `
+            -agentSpec "${{ inputs.AGENT_SPEC }}"
 
   matrix-tests:
     needs: [pre-build]
