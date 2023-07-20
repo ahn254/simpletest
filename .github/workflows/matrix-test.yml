@@ -57,6 +57,7 @@ jobs:
 
   reRunFailedJobs:
     needs: [matrix-tests]
+    name: Re-run failed tests
     if: ${{ failure() }}
     runs-on: ${{ inputs.AGENT_SPEC }}
     steps:
@@ -65,7 +66,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: pwsh
         run: |
-          gh run rerun ${{ github.run_id }} --failed
+          gh run rerun ${{ github.run_id }} --failed --repo ${{ github.repository }}
 
   build-report:
     needs: [reRunFailedJobs]
