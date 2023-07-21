@@ -1,0 +1,34 @@
+run-name: test re-run of failed job
+on:
+  workflow_dispatch:
+
+jobs:
+  test-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Build matrix
+        id: build_matrix_step
+        shell: pwsh
+        run: |
+          write-hostc "hello world"
+
+  reRunFailedJobs:
+    needs: [test-job]
+    name: Re-run failed tests
+    if: ${{ failure() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Re-run failed jobs
+        env:
+          GH_TOKEN: ${{ secrets.AA_TOKEN }}
+        shell: pwsh
+        run: |
+          $alljobs = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $failedjobs = ($alljobs | ConvertFrom-Json).jobs | Where-Object { $_.name -ne "pre-build" -and $_.conclusion -eq 'failure'}
+          foreach ($fjob in $failedjobs) {
+            write-host "failed job id - " $($fjob.id)
+            gh run rerun --job $fjob.id --repo ${{ github.repository }}
+          }
