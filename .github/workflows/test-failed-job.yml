@@ -26,14 +26,14 @@ jobs:
           GH_TOKEN: ${{ secrets.AA_TOKEN }}
         shell: pwsh
         run: |
-          gh api `
-            --method POST `
-            -H "Accept: application/vnd.github+json" `
-            -H "X-GitHub-Api-Version: 2022-11-28" `
-            /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/rerun-failed-jobs
-          #$alljobs = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
-          #$failedjobs = ($alljobs | ConvertFrom-Json).jobs | Where-Object { $_.name -ne "pre-build" -and $_.conclusion -eq 'failure'}
-          #foreach ($fjob in $failedjobs) {
-          #  write-host "failed job id - " $($fjob.id)
-          #  gh run rerun --job $fjob.id --repo ${{ github.repository }}
-          #}
+          $alljobs = (gh api /repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/attempts/${{ github.run_attempt }}/jobs)
+          $failedjobs = ($alljobs | ConvertFrom-Json).jobs | Where-Object { $_.name -ne "pre-build" -and $_.conclusion -eq 'failure'}
+          foreach ($fjob in $failedjobs) {
+            write-host "failed job id - " $($fjob.id)
+            gh api `
+                --method POST `
+                -H "Accept: application/vnd.github+json" `
+                -H "X-GitHub-Api-Version: 2022-11-28" `
+                /repos/${{ github.repository }}/actions/jobs/$($fjob.id)/rerun
+            #gh run rerun --job $fjob.id --repo ${{ github.repository }}
+          }
