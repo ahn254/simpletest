@@ -2,70 +2,47 @@
     {
         "name": "7zip",
         "labels": ["all"],
-        "templates": [
-            "7zip"
-        ]
-    },
-    {
-        "name": "azsecpack test condition",
-        "labels": ["ubuntu", "windows"],
-        "templates": [
-            "azsecpack"
-        ]
+        "templates": "7zip"
     },
     {
         "name": "azsecpack",
         "labels": ["ubuntu", "windows"],
-        "templates": [
-            "azsecpack-win",
-            "azsecpack-ubnt"
-        ]
+        "templates": "azsecpack"
+
     },
     {
         "name": "zstd",
         "labels": ["all"],
-        "templates": [
-            "zstd"
-        ]
+        "templates": "zstd"
     },
     {
         "name": "python check default",
         "group": "python-basic",
         "labels": ["all"],
-        "templates": [
-            "python-check-default"
-        ]
+        "templates": "python-check-default"
     },
     {
         "name": "python default",
         "group": "python-basic",
         "labels": ["all"],
-        "templates": [
-            "python-default"
-        ]
+        "templates": "python-default"
     },
     {
         "name": "test exact agent spec 1",
         "labels": ["windows", "ubuntu-22.04"],
-        "templates": [
-            "7zip"
-        ]
+        "templates": "7zip"
     },
     {
         "name": "python package",
         "group": "python-basic",
         "labels": ["all"],
-        "templates": [
-            "python-package"
-        ]
+        "templates": "python-package"
     },
     {
         "name": "python build extension",
         "group": "python-basic",
         "labels": ["ubuntu", "macos"],
-        "templates": [
-            "python-build-ext"
-        ],
+        "templates": "python-build-ext",
         "matrix": {
             "ubuntu-20.04":
             [
@@ -99,9 +76,7 @@
         "name": "python build c-extension",
         "group": "python-basic",
         "labels": ["ubuntu", "windows"],
-        "templates": [
-            "python-c-extension"
-        ],
+        "templates": "python-c-extension",
         "matrix": {
             "ubuntu-20.04":
             [
@@ -135,22 +110,16 @@
     {
         "name": "new test",
         "labels": ["windows", "macos"],
-        "templates": [
-            "7zip"
-        ]
+        "templates": "7zip"
     },
     {
         "name": "test exact agent spec 2",
         "labels": ["macos-11"],
-        "templates": [
-            "7zip"
-        ]
+        "templates": "7zip"
     },
     {
         "name": "test exact agent spec 3",
         "labels": ["windows-2019", "ubuntu", "macos-12"],
-        "templates": [
-            "7zip"
-        ]
+        "templates": "7zip"
     }
 ]
