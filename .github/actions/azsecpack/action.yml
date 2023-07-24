@@ -4,7 +4,7 @@ runs:
   using: composite
   steps:
     - name: run test
-      if: ${{ runner.os == "Windows" }}
+      if: ${{ runner.os == 'Windows' }}
       shell: pwsh
       run: |
         $isInstalled = Get-CimInstance -ClassName Win32_Product | Where-Object Name -like "Windows Azure Pack *"
@@ -16,7 +16,7 @@ runs:
         }
 
     - name: run test
-      if: ${{ runner.os == "Linux" }}
+      if: ${{ runner.os == 'Linux' }}
       shell: pwsh
       run: |
         $services = @{
