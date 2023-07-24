@@ -1,0 +1,49 @@
+name: Azure Security Pack
+description: Azure Security Pack
+runs:
+  using: composite
+  steps:
+    - name: run test
+      if: ${{ runner.os == "Windows" }}
+      shell: pwsh
+      run: |
+        $isInstalled = Get-CimInstance -ClassName Win32_Product | Where-Object Name -like "Windows Azure Pack *"
+        if ($isInstalled) {
+            Write-Host "Windows Azure Pack is installed:"
+            $isInstalled | Format-Table -AutoSize
+            Write-Host "Please consult with compute-sre[#c2c-actions-compute-sre] team in Slack"
+            throw 1
+        }
+
+    - name: run test
+      if: ${{ runner.os == "Linux" }}
+      shell: pwsh
+      run: |
+        $services = @{
+          "auoms.service" = "OMS Audit data collection daemon"
+          "azsecd.service" = "Azure security scanning daemon"
+          "azsecmond.service" = "Azure security monitoring daemon"
+          "azuremonitoragentmgr.service" = "Azure Monitor Agent Manager daemon"
+          "clamav-freshclam.service" = "ClamAV virus database updater"
+        }
+
+        $result = @()
+        $allServices = systemctl list-units --type=service --state=active
+        $isInstalled = $false
+
+        foreach($service in $services.GetEnumerator() | Sort-Object Name) {
+            $isPresent = $allServices | Select-String $service.Key -Quiet
+            $status = "-"
+            if ($isPresent) {
+                $status = "+"
+                $isInstalled = $true
+            }
+            $result += "`t[$status] $($service.Value) ($($service.Key))"
+        }
+
+        if ($isInstalled) {
+            Write-Host "Azure Security Pack is installed:"
+            $result | Out-String
+            Write-Host "Please consult with compute-sre[#c2c-actions-compute-sre] team in Slack"
+            throw 1
+        }

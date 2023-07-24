@@ -1,14 +1,21 @@
 [
     {
         "name": "7zip",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["all"],
         "templates": [
             "7zip"
         ]
     },
     {
+        "name": "azsecpack test condition",
+        "labels": ["ubuntu", "windows"],
+        "templates": [
+            "azsecpack"
+        ]
+    },
+    {
         "name": "azsecpack",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022",
+        "labels": ["ubuntu", "windows"],
         "templates": [
             "azsecpack-win",
             "azsecpack-ubnt"
@@ -16,7 +23,7 @@
     },
     {
         "name": "zstd",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["all"],
         "templates": [
             "zstd"
         ]
@@ -24,7 +31,7 @@
     {
         "name": "python check default",
         "group": "python-basic",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["all"],
         "templates": [
             "python-check-default"
         ]
@@ -32,15 +39,22 @@
     {
         "name": "python default",
         "group": "python-basic",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["all"],
         "templates": [
             "python-default"
         ]
     },
     {
+        "name": "test exact agent spec 1",
+        "labels": ["windows", "ubuntu-22.04"],
+        "templates": [
+            "7zip"
+        ]
+    },
+    {
         "name": "python package",
         "group": "python-basic",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["all"],
         "templates": [
             "python-package"
         ]
@@ -48,7 +62,7 @@
     {
         "name": "python build extension",
         "group": "python-basic",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, macos-11, macos-12",
+        "labels": ["ubuntu", "macos"],
         "templates": [
             "python-build-ext"
         ],
@@ -84,7 +98,7 @@
     {
         "name": "python build c-extension",
         "group": "python-basic",
-        "supportedOSes": "ubuntu-22.04, ubuntu-20.04, windows-2019, windows-2022",
+        "labels": ["ubuntu", "windows"],
         "templates": [
             "python-c-extension"
         ],
@@ -120,7 +134,21 @@
     },
     {
         "name": "new test",
-        "supportedOSes": "windows-2019, windows-2022, macos-11, macos-12",
+        "labels": ["windows", "macos"],
+        "templates": [
+            "7zip"
+        ]
+    },
+    {
+        "name": "test exact agent spec 2",
+        "labels": ["macos-11"],
+        "templates": [
+            "7zip"
+        ]
+    },
+    {
+        "name": "test exact agent spec 3",
+        "labels": ["windows-2019", "ubuntu", "macos-12"],
         "templates": [
             "7zip"
         ]
