@@ -153,4 +153,19 @@
             "7zip"
         ]
     }
+    ,
+    {
+        "name": "test exact agent spec 4",
+        "labels": ["windows-2022", "ubuntu", "macos"],
+        "templates": [
+            "7zip"
+        ]
+    },
+    {
+        "name": "test exact agent spec 5",
+        "labels": ["all"],
+        "templates": [
+            "7zip"
+        ]
+    }
 ]
