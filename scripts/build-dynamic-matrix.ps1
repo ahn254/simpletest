@@ -2,6 +2,12 @@ param(
     [String] [Parameter (Mandatory)] $agentSpec
 )
 
+$validAgentSpec = [string]::IsNullOrEmpty($(@("macos", "ubuntu","windows") | Where-Object {$_ -match $agentSpec.Split("-")[0]}))
+
+if ($validAgentSpec) {
+    throw "Unsupported Agent Spec was provided. `nSupported Agent Specs for standard runners: macos-11, macos-12, macos-13, ubuntu-20.04, ubuntu-22.04, windows-2019, windows-2022. `nSupported Agent Specs for custom large runners should start from `"macos`", `"ubuntu`", or `"windows`"."
+}
+
 $AllowedCanaryTests =  Get-Content -Path ./_canary.json -Raw | ConvertFrom-Json -Depth 9 `
                 | Where-Object { ($_.labels -eq "all") -or ($_.labels -eq $agentSpec) -or `
                 ($_.labels -eq $agentSpec.Split("-")[0]) }
