@@ -1,4 +1,4 @@
-run-name: Run tests ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION }}
+run-name: Run tests '${{ inputs.TEST_SPEC }}' on ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION }}
 on:
   workflow_dispatch:
     inputs:
@@ -11,7 +11,6 @@ on:
       TEST_SPEC:
         description: 'Name of a test to run or a comma-separated list of test names'
         required: false
-
 
 jobs:
   pre-build:
@@ -137,3 +136,4 @@ jobs:
             }
           }
           Write-Host $env:GITHUB_STEP_SUMMARY
+
