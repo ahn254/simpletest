@@ -1,0 +1,21 @@
+run-name: Run tests '${{ inputs.TEST_SPEC }}' on ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION }}
+on:
+  workflow_dispatch:
+    inputs:
+      IMAGE_VERSION:
+        description: 'image version'
+        required: false
+      AGENT_SPEC:
+        description: 'Agent spec e.g. windows-2019, ubuntu-22.04, macos-12'
+        required: false
+      TEST_SPEC:
+        description: 'Name of a test to run or a comma-separated list of test names'
+        required: false
+
+jobs:
+  fake:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Collect output data
+        shell: pwsh
+        run: false
