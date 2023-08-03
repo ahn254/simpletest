@@ -26,7 +26,7 @@ jobs:
       - name: Print variables
         shell: pwsh
         run: |
-          Get-ChildItem $env:ImageVersion
+          Get-ChildItem env:ImageVersion
           write-host "The matrix: "
           $matrixToPrint = '${{ steps.build_matrix_step.outputs.matrix }}'
           write-host $( $matrixToPrint | ConvertFrom-Json -Depth 9 )
