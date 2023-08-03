@@ -29,7 +29,7 @@ jobs:
           Get-ChildItem env:ImageVersion
           write-host "The matrix: "
           $matrixToPrint = '${{ steps.build_matrix_step.outputs.matrix }}'
-          write-host $( $matrixToPrint | ConvertFrom-Json -Depth 9 )
+          ($matrixToPrint | ConvertFrom-Json -Depth 9) | ConvertTo-Json
 
   matrix-tests:
     needs: [pre-build]
@@ -104,7 +104,7 @@ jobs:
           }
           $testsFailure = ($testsTotal-$testsSuccess)
 
-          "# Tests report" > $env:GITHUB_STEP_SUMMARY
+          "# Tests report for ${{ inputs.AGENT_SPEC }} - $env:ImageVersion" > $env:GITHUB_STEP_SUMMARY
           "## Stats" >> $env:GITHUB_STEP_SUMMARY
           "Total: $testsTotal" >> $env:GITHUB_STEP_SUMMARY
           "Success: $testsSuccess ($(($testsSuccess/$testsTotal).tostring('P')))" >> $env:GITHUB_STEP_SUMMARY
