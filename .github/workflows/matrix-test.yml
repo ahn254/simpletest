@@ -1,10 +1,7 @@
-run-name: Run tests ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION }}
+run-name: Run tests ${{ inputs.AGENT_SPEC }}
 on:
   workflow_dispatch:
     inputs:
-      IMAGE_VERSION:
-        description: 'image version'
-        required: false
       AGENT_SPEC:
         description: 'Agent spec e.g. windows-2019, ubuntu-22.04, macos-12'
         required: false
@@ -25,6 +22,12 @@ jobs:
         run: |
           ./scripts/build-dynamic-matrix.ps1 `
             -agentSpec "${{ inputs.AGENT_SPEC }}"
+
+      - name: Print variables
+        shell: pwsh
+        run: |
+          Get-ChildItem env:Image_Version
+          Get-ChildItem env:matrix
 
   matrix-tests:
     needs: [pre-build]

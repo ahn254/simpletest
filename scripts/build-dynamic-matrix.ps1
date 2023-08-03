@@ -48,3 +48,4 @@ foreach ($test in $AllowedCanaryTests) {
 }
 
 "matrix=$($matrix | ConvertTo-Json -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+"Image_Version=$($env:ImageVersion)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
