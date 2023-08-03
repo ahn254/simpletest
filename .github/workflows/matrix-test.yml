@@ -28,7 +28,8 @@ jobs:
         run: |
           Get-ChildItem $env:ImageVersion
           write-host "The matrix: "
-          write-host $("${{ steps.build_matrix_step.outputs.matrix }}" | ConvertFrom-Json -Depth 9 )
+          $matrixToPrint = "${{ steps.build_matrix_step.outputs.matrix }}"
+          write-host $( $matrixToPrint | ConvertFrom-Json -Depth 9 )
 
   matrix-tests:
     needs: [pre-build]
