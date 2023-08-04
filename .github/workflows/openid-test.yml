@@ -21,5 +21,6 @@ jobs:
           uses: azure/powershell@v1
           with:
              inlineScript: |
-               Get-AzResourceGroup
+               #Get-AzResourceGroup
+               New-AzResourceGroup -Name "RG-OpenID-Test" -Location "South Central US"
              azPSVersion: "latest"
