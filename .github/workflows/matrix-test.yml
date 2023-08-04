@@ -29,7 +29,7 @@ jobs:
       matrix:
         imgVersion: ${{ fromJson(needs.get-imageVersion.outputs.imgver) }}
     runs-on: ubuntu-latest
-    name: Make tests list for ${{ inputs.AGENT_SPEC }} - ${{ matrix.imgVersion }}
+    name: Matrix for ${{ inputs.AGENT_SPEC }} - ${{ matrix.imgVersion }}
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
     steps:
