@@ -8,8 +8,28 @@ on:
 
 
 jobs:
-  pre-build:
+  get-imageVersion:
     runs-on: ubuntu-latest
+    name: getting Image Version
+    outputs:
+      imgver: ${{ steps.get_imgVer.outputs.imgver }}
+    steps:
+      - name: Output Image version
+        id: get_imgVer
+        shell: pwsh
+        run: |
+          "imgver=$($env:ImageVersion  | ConvertTo-Json -AsArray -Compress)"" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+
+
+  pre-build:
+    needs: [get-imageVersion]
+    strategy:
+      max-parallel: 3
+      fail-fast: false
+      matrix:
+        imgVersion: ${{ fromJson(needs.get-imageVersion.outputs.imgver) }}
+    runs-on: ubuntu-latest
+    name: Make tests list for ${{ inputs.AGENT_SPEC }} - ${{ matrix.imgVersion }}
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
     steps:
@@ -38,7 +58,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
 
-    name: "${{ matrix.testNmae }}"
+    name: ${{ matrix.testNmae }}
     runs-on: ${{ inputs.AGENT_SPEC }}
     outputs:
       outcome: ${{ steps.run.outcome }}
