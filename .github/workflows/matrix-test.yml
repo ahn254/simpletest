@@ -18,7 +18,7 @@ jobs:
         id: get_imgVer
         shell: pwsh
         run: |
-          "imgver=$($env:ImageVersion  | ConvertTo-Json -AsArray -Compress)"" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
+          "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
 
 
   pre-build:
