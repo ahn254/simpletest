@@ -17,13 +17,21 @@ jobs:
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }} 
             enable-AzPSSession: true
 
+        - name: Azure CLI Action
+          uses: Azure/cli@v1.0.7
+          with:
+            inlineScript: 
+              az account show
+
+
         - name: 'Get resource group with PowerShell action'
           uses: azure/powershell@v1
           with:
              inlineScript: |
                #Get-AzResourceGroup
                #New-AzResourceGroup -Name "RG-OpenID-Test" -Location "South Central US"
-               $Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
-               Invoke-RestMethod -Method Get `
-                -Uri $url 
+               #$Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
+               #Invoke-RestMethod -Method Get `
+                #-Uri $url 
+                az account show
              azPSVersion: "latest"
