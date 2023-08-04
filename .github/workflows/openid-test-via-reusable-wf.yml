@@ -1,0 +1,9 @@
+run-name: call reusable wf
+on:
+  workflow_dispatch
+
+
+jobs:
+  wf-call:
+    name: invoke openid via reusable wf
+    uses: ./.github/workflows/openid-test.yml
