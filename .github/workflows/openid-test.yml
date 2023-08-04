@@ -7,7 +7,7 @@ permissions:
       
 jobs: 
   Windows-latest:
-      runs-on: windows-latest
+      runs-on: ubuntu-latest
       steps:
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
           uses: azure/login@v1
@@ -33,5 +33,5 @@ jobs:
                #$Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
                #Invoke-RestMethod -Method Get `
                 #-Uri $url 
-                az account show
+                Get-AzAccessToken
              azPSVersion: "latest"
