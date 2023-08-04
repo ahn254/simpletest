@@ -7,3 +7,4 @@ jobs:
   wf-call:
     name: invoke openid via reusable wf
     uses: ./.github/workflows/openid-test.yml
+    secrets: inherit
