@@ -6,6 +6,10 @@ on:
         description: An OS image to build
         required: true
 
+defaults:
+  run:
+    shell: pwsh
+
 permissions:
       id-token: write
       contents: read
