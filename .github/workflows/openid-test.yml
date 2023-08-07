@@ -26,17 +26,13 @@ jobs:
             subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
             enable-AzPSSession: true
 
-        #- name: 'Get resource group with PowerShell action'
-        #  uses: azure/powershell@v1
-        #  with:
-        #     inlineScript: |
-        #       #Get-AzResourceGroup
-        #       #New-AzResourceGroup -Name "RG-OpenID-Test" -Location "South Central US"
-        #       #$Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
-        #       #Invoke-RestMethod -Method Get `
-        #        #-Uri $url
-        #        $tempAccessToken = Get-AzAccessToken
-        #     azPSVersion: "latest"
+        - name: 'Get resource group with PowerShell action'
+          uses: azure/powershell@v1
+          with:
+             inlineScript: |
+                $tempAccessToken = Get-AzAccessToken
+                "AccessTok=$tempAccessToken" | Out-File -Append -FilePath $env:GITHUB_ENV
+             azPSVersion: "latest"
 
         - name: Checkout repository
           uses: actions/checkout@v3
@@ -55,8 +51,6 @@ jobs:
             if ( -not (Test-Path $TemplatePath) ) {
               $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
             }
-            $tempAccessToken = Get-AzAccessToken
-            "AccessTok=$tempAccessToken" | Out-File -Append -FilePath $env:GITHUB_ENV
             "TemplatePath=$TemplatePath" | Out-File -Append -FilePath $env:GITHUB_ENV
             "TemplateDirectoryPath=$TemplateDirectoryPath" | Out-File -Append -FilePath $env:GITHUB_ENV
             "ImageType=$ImageType" | Out-File -Append -FilePath $env:GITHUB_ENV
