@@ -30,7 +30,7 @@ jobs:
           uses: azure/powershell@v1
           with:
              inlineScript: |
-                $tempAccessToken = Get-AzAccessToken
+                $tempAccessToken = (Get-AzAccessToken).token
                 "AccessTok=$tempAccessToken" | Out-File -Append -FilePath $env:GITHUB_ENV
              azPSVersion: "latest"
 
