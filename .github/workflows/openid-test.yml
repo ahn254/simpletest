@@ -1,11 +1,16 @@
 on:
-  workflow_call
+  workflow_call:
+    inputs:
+      image_name:
+        type: string
+        description: An OS image to build
+        required: true
 
 permissions:
       id-token: write
       contents: read
-      
-jobs: 
+
+jobs:
   Windows-latest:
       runs-on: ubuntu-latest
       steps:
@@ -14,24 +19,61 @@ jobs:
           with:
             client-id: ${{ secrets.CLIENT_ID }}
             tenant-id: ${{ secrets.AZURE_TENANT }}
-            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }} 
+            subscription-id: ${{ secrets.AZURE_SUBSCRIPTION }}
             enable-AzPSSession: true
 
-        - name: Azure CLI Action
-          uses: Azure/cli@v1.0.7
-          with:
-            inlineScript: 
-              az account show
+        #- name: 'Get resource group with PowerShell action'
+        #  uses: azure/powershell@v1
+        #  with:
+        #     inlineScript: |
+        #       #Get-AzResourceGroup
+        #       #New-AzResourceGroup -Name "RG-OpenID-Test" -Location "South Central US"
+        #       #$Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
+        #       #Invoke-RestMethod -Method Get `
+        #        #-Uri $url
+        #        $tempAccessToken = Get-AzAccessToken
+        #     azPSVersion: "latest"
 
-
-        - name: 'Get resource group with PowerShell action'
-          uses: azure/powershell@v1
+        - name: Checkout repository
+          uses: actions/checkout@v3
           with:
-             inlineScript: |
-               #Get-AzResourceGroup
-               #New-AzResourceGroup -Name "RG-OpenID-Test" -Location "South Central US"
-               #$Url = "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/oauth2/v2.0/authorize?client_id=03e46404-b192-48c2-9539-b7670a60ba14&response_type=id_token&response_mode=form_post&scope=openid&state=69003647&nonce=68442111"
-               #Invoke-RestMethod -Method Get `
-                #-Uri $url 
-                Get-AzAccessToken
-             azPSVersion: "latest"
+            repository: actions/runner-images
+
+        - name: Set image variables
+          run: |
+            $ImageType = "${{ inputs.image_name }}"
+
+            if ($ImageType.StartsWith("ubuntu")) { $TemplateDirectoryName = "linux" } else { $TemplateDirectoryName = "win" }
+
+            $TemplateDirectoryPath = Join-Path "images" $TemplateDirectoryName | Resolve-Path
+            $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.pkr.hcl"
+
+            if ( -not (Test-Path $TemplatePath) ) {
+              $TemplatePath = Join-Path $TemplateDirectoryPath "$ImageType.json"
+            }
+            $tempAccessToken = Get-AzAccessToken
+            "AccessTok=$tempAccessToken" | Out-File -Append -FilePath $env:GITHUB_ENV
+            "TemplatePath=$TemplatePath" | Out-File -Append -FilePath $env:GITHUB_ENV
+            "TemplateDirectoryPath=$TemplateDirectoryPath" | Out-File -Append -FilePath $env:GITHUB_ENV
+            "ImageType=$ImageType" | Out-File -Append -FilePath $env:GITHUB_ENV
+
+        - name: Build image
+          run: |
+              $ResourcesNamePrefix = ${{ github.run_id }} % [System.UInt32]::MaxValue
+              ./images.CI/linux-and-win/build-image.ps1 `
+                -TemplatePath ${{ env.TemplatePath }} `
+                -ClientId ${{ secrets.CLIENT_ID }} `
+                -Client_jwt ${{ env.AccessTok }} `
+                -Location ${{ secrets.AZURE_LOCATION }} `
+                -ResourcesNamePrefix $ResourcesNamePrefix `
+                -ResourceGroup ${{ secrets.AZURE_RESOURCE_GROUP }} `
+                -StorageAccount ${{ secrets.AZURE_STORAGE_ACCOUNT }} `
+                -SubscriptionId ${{ secrets.AZURE_SUBSCRIPTION }} `
+                -TenantId ${{ secrets.AZURE_TENANT }} `
+                -VirtualNetworkName ${{ secrets.BUILD_AGENT_VNET_NAME }} `
+                -VirtualNetworkSubnet ${{ secrets.BUILD_AGENT_SUBNET_NAME }} `
+                -VirtualNetworkRG ${{ secrets.BUILD_AGENT_VNET_RESOURCE_GROUP }} `
+          env:
+            PACKER_LOG: 1
+            PACKER_LOG_PATH: ${{ runner.temp }}/packer-log.txt
+            RUN_VALIDATION_FLAG: true
