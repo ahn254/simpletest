@@ -1,35 +1,18 @@
-run-name: Run tests ${{ inputs.AGENT_SPEC }}
+run-name: Run tests ${{ inputs.AGENT_SPEC }} - ${{ inputs.IMAGE_VERSION || 'manual run'}}
 on:
   workflow_dispatch:
     inputs:
+      IMAGE_VERSION:
+        description: 'image version'
+        required: false
       AGENT_SPEC:
         description: 'Agent spec e.g. windows-2019, ubuntu-22.04, macos-12'
         required: false
 
-
 jobs:
-  get-imageVersion:
-    runs-on: ubuntu-latest
-    name: getting Image Version
-    outputs:
-      imgver: ${{ steps.get_imgVer.outputs.imgver }}
-    steps:
-      - name: Output Image version
-        id: get_imgVer
-        shell: pwsh
-        run: |
-          "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_OUTPUT
-
-
   pre-build:
-    needs: [get-imageVersion]
-    strategy:
-      max-parallel: 3
-      fail-fast: false
-      matrix:
-        imgVersion: ${{ fromJson(needs.get-imageVersion.outputs.imgver) }}
     runs-on: ubuntu-latest
-    name: Matrix for ${{ inputs.AGENT_SPEC }} - ${{ matrix.imgVersion }}
+    name: Matrix for ${{ inputs.AGENT_SPEC }}
     outputs:
       matrix: ${{ steps.build_matrix_step.outputs.matrix }}
     steps:
@@ -40,6 +23,7 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
+          "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_env
           ./scripts/build-dynamic-matrix.ps1 `
             -agentSpec "${{ inputs.AGENT_SPEC }}"
 
@@ -57,8 +41,8 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-
     name: ${{ matrix.testNmae }}
+
     runs-on: ${{ inputs.AGENT_SPEC }}
     outputs:
       outcome: ${{ steps.run.outcome }}
@@ -68,6 +52,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: "${{ matrix.testNmae }}"
+        if: ${{ inputs.IMAGE_VERSION == env.imgver }}
         uses: ./.github/actions/invoke-uses
         with:
           uses: "${{ matrix.actions }}"
