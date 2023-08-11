@@ -39,7 +39,8 @@ foreach ($test in $AllowedCanaryTests) {
     } else {
         foreach ($matrixItem in $test.matrix.$agentSpec) {
             $tempNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
-            $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$tempNmae;parameter=$matrixItem})
+            $formatedMatrixItem = """{0}"": ""{1}""" -f $($matrixItem.Split(":")[0].trim()), $($matrixItem.Split(":")[-1].trim())
+            $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$tempNmae;parameter=$formatedMatrixItem})
         }
     }
 }
