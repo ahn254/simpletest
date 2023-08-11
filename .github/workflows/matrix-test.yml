@@ -23,7 +23,7 @@ jobs:
         id: build_matrix_step
         shell: pwsh
         run: |
-          "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append -FilePath $env:GITHUB_env
+          "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append $env:GITHUB_ENV
           ./scripts/build-dynamic-matrix.ps1 `
             -agentSpec "${{ inputs.AGENT_SPEC }}"
 
