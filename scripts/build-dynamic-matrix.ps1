@@ -33,14 +33,14 @@ foreach ($test in $AllowedCanaryTests) {
     }
 
     $testPath = './.github/actions/' + $test.templates
-    $testNmae = $test.name
+    $testName = $test.name
     if ([string]::IsNullOrEmpty($test.matrix)) {
-        $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$testNmae;parameter=$null})
+        $matrixArray += @([pscustomobject]@{actions=$testPath;testName=$testName;parameter=$null})
     } else {
         foreach ($matrixItem in $test.matrix.$agentSpec) {
-            $tempNmae = $testNmae + ($matrixItem.Split(":")[-1]).replace('"','')
+            $tempNmae = $testName + ($matrixItem.Split(":")[-1]).replace('"','')
             $formatedMatrixItem = """{0}"": ""{1}""" -f $($matrixItem.Split(":")[0].trim()), $($matrixItem.Split(":")[-1].trim())
-            $matrixArray += @([pscustomobject]@{actions=$testPath;testNmae=$tempNmae;parameter=$formatedMatrixItem})
+            $matrixArray += @([pscustomobject]@{actions=$testPath;testName=$tempNmae;parameter=$formatedMatrixItem})
         }
     }
 }

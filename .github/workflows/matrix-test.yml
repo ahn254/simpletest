@@ -9,6 +9,10 @@ on:
         description: 'Agent spec e.g. windows-2019, ubuntu-22.04, macos-12'
         required: false
 
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   pre-build:
     runs-on: ubuntu-latest
@@ -21,14 +25,12 @@ jobs:
 
       - name: Build matrix
         id: build_matrix_step
-        shell: pwsh
         run: |
           "imgver=$($env:ImageVersion | ConvertTo-Json -AsArray -Compress)" | Out-File -Append $env:GITHUB_ENV
           ./scripts/build-dynamic-matrix.ps1 `
             -agentSpec "${{ inputs.AGENT_SPEC }}"
 
       - name: Print variables
-        shell: pwsh
         run: |
           Get-ChildItem env:ImageVersion
           write-host "The matrix: "
@@ -41,7 +43,7 @@ jobs:
       max-parallel: 3
       fail-fast: false
       matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
-    name: ${{ matrix.testNmae }}
+    name: ${{ matrix.testName }}
 
     runs-on: ${{ inputs.AGENT_SPEC }}
     outputs:
@@ -51,7 +53,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: "${{ matrix.testNmae }}"
+      - name: "${{ matrix.testName }}"
+        id: run_test
         if: ${{ inputs.IMAGE_VERSION == env.imgver }}
         uses: ./.github/actions/invoke-uses
         with:
@@ -60,10 +63,16 @@ jobs:
 
       - name: Collect output data
         if: ${{ always() }}
-        shell: pwsh
         run: |
           $time = [int](Get-Date -UFormat %s -Millisecond 0)
           Write-Host $time >> $env:GITHUB_OUTPUT
+
+      - name: Fail the job if "${{ matrix.testName }}" skipped
+        if: ${{ steps.run_test.conclusion == 'skipped' }}
+        run: |
+          write-host "The ${{ matrix.testName }} status is ${{ steps.run_test.conclusion }}"
+          write-host "::error the previous step was skipped due to an Image version mismatch ,title=${{ matrix.testName }} is skipped::The local image version ${{ env.imgver }} does not equal the provided one ${{ inputs.IMAGE_VERSION }}"
+          exit 1
 
   build-report:
     needs: [matrix-tests]
