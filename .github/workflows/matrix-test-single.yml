@@ -26,7 +26,7 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/build-dynamic-matrix.ps1 `
-            -agentSpec "${{ inputs.AGENT_SPEC }}" -TestName "${{ inputs.TEST_SPEC }}"
+            -agentSpec "${{ inputs.AGENT_SPEC }}" -selectedTestName "${{ inputs.TEST_SPEC }}"
 
   matrix-tests:
     needs: [pre-build]
@@ -35,7 +35,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.pre-build.outputs.matrix) }}
 
-    name: "${{ matrix.testNmae }}"
+    name: "${{ matrix.testName }}"
     runs-on: ${{ inputs.AGENT_SPEC }}
     outputs:
       outcome: ${{ steps.run.outcome }}
@@ -44,7 +44,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: "${{ matrix.testNmae }}"
+      - name: "${{ matrix.testName }}"
         uses: ./.github/actions/invoke-uses
         with:
           uses: "${{ matrix.actions }}"
