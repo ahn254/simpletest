@@ -1,6 +1,6 @@
 param(
     [String] [Parameter (Mandatory)] $agentSpec,
-    [String] $TestName
+    [String] $selectedTestName
 )
 
 $validAgentSpec = [string]::IsNullOrEmpty($(@("macos", "ubuntu", "windows") | Where-Object { $_ -match $agentSpec.Split("-")[0] }))
@@ -14,8 +14,8 @@ $AllowedCanaryTests = Get-Content -Path ./_canary.json -Raw | ConvertFrom-Json -
     ($_.labels -eq $agentSpec.Split("-")[0]) }
 
 $SelectedCanaryTests = @()
-if ($TestName) {
-    $TestName.Split(",") | ForEach-Object {
+if ($selectedTestName) {
+    $selectedTestName.Split(",") | ForEach-Object {
         $name = $_.Trim()
         if ( -Not ($AllowedCanaryTests | Select-Object -ExpandProperty name).contains($name)) {
             Throw "Test with name '$name' doesn't exist or is not active"
@@ -28,7 +28,7 @@ $matrixArray = @()
 
 foreach ($test in $AllowedCanaryTests) {
 
-    if ( $TestName -And -Not ($SelectedCanaryTests.contains($test.name))) {
+    if ( $selectedTestName -And -Not ($SelectedCanaryTests.contains($test.name))) {
         Continue
     }
 
