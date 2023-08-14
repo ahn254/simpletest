@@ -71,7 +71,7 @@ jobs:
         if: ${{ steps.run_test.conclusion == 'skipped' }}
         run: |
           write-host "The ${{ matrix.testName }} status is ${{ steps.run_test.conclusion }}"
-          write-host "::error the previous step was skipped due to an Image version mismatch ,title=${{ matrix.testName }} is skipped::The local image version ${{ env.imgver }} does not equal the provided one ${{ inputs.IMAGE_VERSION }}"
+          write-host "::error the previous step was skipped due to an Image version mismatch ,title=${{ matrix.testName }} is skipped::The local image version ${env:ImageVersion} does not equal the provided one ${{ inputs.IMAGE_VERSION }}"
           exit 1
 
   build-report:
