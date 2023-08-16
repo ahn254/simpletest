@@ -1,7 +1,9 @@
 run-name: call reusable wf
 on:
-  workflow_dispatch
-
+  workflow_dispatch:
+  
+  pull_request_target:
+    types: labeled
 
 jobs:
   wf-call:
