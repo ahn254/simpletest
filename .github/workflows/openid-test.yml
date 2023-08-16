@@ -17,6 +17,7 @@ permissions:
 jobs:
   Windows-latest:
       runs-on: ubuntu-latest
+      environment: test-ci
       steps:
         - name: OIDC Login to Azure Public Cloud with AzPowershell (enableAzPSSession true)
           uses: azure/login@v1
