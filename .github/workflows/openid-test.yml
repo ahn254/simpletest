@@ -58,6 +58,7 @@ jobs:
 
         - name: Build image
           run: |
+              $spnsecret = $(az keyvault secret show --name "outlook-email-address" --vault-name "imagegeneration"--query value -o tsv)
               $ResourcesNamePrefix = ${{ github.run_id }} % [System.UInt32]::MaxValue
               ./images.CI/linux-and-win/build-image.ps1 `
                 -TemplatePath ${{ env.TemplatePath }} `
