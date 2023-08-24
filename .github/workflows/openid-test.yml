@@ -63,7 +63,7 @@ jobs:
               ./images.CI/linux-and-win/build-image.ps1 `
                 -TemplatePath ${{ env.TemplatePath }} `
                 -ClientId ${{ secrets.CLIENT_ID }} `
-                -Client_jwt ${{ env.AccessTok }} `
+                -ClientSecret $spnsecret `
                 -Location ${{ secrets.AZURE_LOCATION }} `
                 -ResourcesNamePrefix $ResourcesNamePrefix `
                 -ResourceGroup ${{ secrets.AZURE_RESOURCE_GROUP }} `
