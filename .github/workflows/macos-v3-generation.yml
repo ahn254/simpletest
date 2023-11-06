@@ -57,7 +57,6 @@ jobs:
     #
     needs: [selectRunner]
     runs-on: ${{ needs.selectRunner.outputs.runner }}
-    if: ${{ github.repository_owner == 'ahn254' }}
     timeout-minutes: 1200
     steps:
     - name: Set image variables
