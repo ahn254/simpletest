@@ -57,7 +57,7 @@ jobs:
     #
     needs: [selectRunner]
     runs-on: ${{ needs.selectRunner.outputs.runner }}
-    if: ${{ github.repository_owner == 'AleAiu' }}
+    if: ${{ github.repository_owner == 'ahn254' }}
     timeout-minutes: 1200
     steps:
     - name: Set image variables
@@ -87,7 +87,7 @@ jobs:
       if: ${{ env.CHECKOUT_TYPE == 'main' }}
       uses: actions/checkout@v3
       with:
-        repository: AleAiu/simpletest
+        repository: ahn254/simpletest
 
     - name: Checkout PR
       if: ${{ env.CHECKOUT_TYPE == 'pull_request' }}
